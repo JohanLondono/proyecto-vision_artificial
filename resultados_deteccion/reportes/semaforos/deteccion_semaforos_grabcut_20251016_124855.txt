@@ -1,0 +1,18 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+MÉTODO: GRABCUT
+============================================================
+Fecha y hora: 2025-10-16 12:48:55
+Método utilizado: grabcut
+Número de semáforos detectados: 0
+Tiempo de ejecución: 0.005 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+------------------------------
+  Dimensiones: 450 x 265 píxeles
+  Canales: 3
+  Área total: 119,250 píxeles
+
+SEGMENTACIÓN GRABCUT:
+------------------------------
+  Segmentación de primer plano/fondo
+  Refinamiento iterativo

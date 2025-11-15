@@ -1,0 +1,2 @@
+imagen,dimensiones,num_puntos_clave,dimension_descriptor_bytes,dimension_descriptor_bits,densidad_puntos,fecha_analisis,hamming_distance_promedio,hamming_distance_std,ratio_bits_activos,entropia_descriptores,unicidad_descriptores
+sombrero4,768x768,500,32,256,0.0008477105034722222,2025-10-27T22:29:01.325851,31.560606060606062,0.9952734949049125,0.5325546875,-232.34581562876818,1.0

@@ -1,0 +1,23 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+CONFIGURACIÓN: CONFIG_ADAPTATIVA
+============================================================
+Fecha y hora: 2025-10-16 13:28:42
+Configuración utilizada: CONFIG_ADAPTATIVA
+Número de semáforos detectados: 0
+Tiempo de ejecución: 12.155 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 1050 x 590
+  Canales: 3
+  Píxeles totales: 619500
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Adaptativa
+  Candidatos iniciales: 806
+  Confianza promedio: 0.000
+
+DETALLES ESPECÍFICOS - ADAPTATIVA:
+  - Algoritmos: Color multirrango + Textura + Hough + AKAZE
+  - Enfoque: Adaptación a diferentes condiciones
+  - Umbral de validación: 0.55
+

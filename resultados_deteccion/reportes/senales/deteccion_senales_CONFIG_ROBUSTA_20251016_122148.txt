@@ -1,0 +1,33 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_ROBUSTA
+============================================================
+Fecha y hora: 2025-10-16 12:21:48
+Configuración utilizada: CONFIG_ROBUSTA
+Número de señales detectadas: 1
+Tiempo de ejecución: 0.154 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 650 x 441
+  Canales: 3
+  Píxeles totales: 286650
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Robusta - Contornos circulares + Color multicanal + Validación geométrica
+  Confianza promedio: 0.728
+  Candidatos Hough: 0
+  Candidatos contornos: 1
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (337, 329)
+    Radio: 26
+    Tipo: Advertencia
+    Confianza: 0.728
+
+ESTADÍSTICAS:
+  Radio promedio: 26.00
+  Radio mínimo: 26.00
+  Radio máximo: 26.00
+  Desviación estándar: 0.00
+
+ESTADÍSTICAS POR TIPO:

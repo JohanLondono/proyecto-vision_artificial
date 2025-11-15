@@ -1,0 +1,14 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+MÉTODO: COMBINADO
+============================================================
+Fecha y hora: 2025-10-16 12:19:24
+Método utilizado: combinado
+Número de semáforos detectados: 0
+Tiempo de ejecución: 0.127 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+------------------------------
+  Dimensiones: 1050 x 590 píxeles
+  Canales: 3
+  Área total: 619,500 píxeles
+

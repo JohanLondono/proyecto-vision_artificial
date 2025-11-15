@@ -1,0 +1,38 @@
+ESTADÍSTICAS DE DETECCIÓN DE BORDES - CANNY
+============================================================
+
+INFORMACIÓN GENERAL:
+------------------------------
+Metodo: Canny
+Fecha Analisis: 2025-10-27T22:22:57.506804
+Dimensiones Imagen: (768, 768)
+Umbral Inferior: 100
+Umbral Superior: 200
+
+ESTADÍSTICAS DE MAGNITUD DEL GRADIENTE:
+----------------------------------------
+Magnitud Media: 27.1983
+Magnitud Mediana: 16.1245
+Magnitud Std: 36.0714
+Magnitud Min: 0.0000
+Magnitud Max: 386.5669
+Magnitud Percentil 25: 7.6158
+Magnitud Percentil 75: 32.6497
+Magnitud Percentil 90: 57.0088
+Magnitud Percentil 95: 86.5794
+
+ESTADÍSTICAS DE BORDES DETECTADOS:
+----------------------------------------
+Pixeles Borde: 17586
+Porcentaje Bordes: 2.9816
+Densidad Bordes: 0.0298
+Intensidad Bordes Media: 153.8655
+Intensidad Bordes Std: 43.5663
+Num Componentes Conexas: 618.0000
+
+ESTADÍSTICAS DE DIRECCIÓN:
+----------------------------------------
+Direccion Media: 4.9762
+Direccion Std: 100.1503
+Direccion Min: -179.7476
+Direccion Max: 180.0000

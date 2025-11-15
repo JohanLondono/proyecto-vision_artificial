@@ -1,0 +1,52 @@
+{
+  "imagen": "demo_persona_sombrero.jpg",
+  "ruta_completa": "images/demo_persona_sombrero.jpg",
+  "timestamp": "2025-11-13T00:50:02.154773",
+  "metodos_utilizados": [
+    "YOLO"
+  ],
+  "resultados_por_metodo": {
+    "YOLO": {
+      "objeto_buscado": "person",
+      "imagen": "demo_persona_sombrero.jpg",
+      "encontrado": true,
+      "detecciones_por_modelo": {
+        "OpenCV_Fallback": {
+          "num_detecciones": 1,
+          "detecciones": [
+            {
+              "clase": "person",
+              "confianza": 0.8,
+              "bbox": [
+                253,
+                134,
+                388,
+                269
+              ],
+              "centro": [
+                320,
+                201
+              ],
+              "area": 18225
+            }
+          ],
+          "confianza_maxima": 0.8
+        }
+      }
+    }
+  },
+  "resumen_detecciones": {
+    "metodos_exitosos": [
+      "YOLO"
+    ],
+    "detecciones_totales": 1,
+    "confianza_promedio": 0.8,
+    "tiempo_promedio_por_metodo": 0.0,
+    "mejor_resultado": "YOLO"
+  },
+  "estadisticas_rendimiento": {
+    "tiempo_total": 0.36879420280456543,
+    "metodos_utilizados_count": 1,
+    "detecciones_exitosas": 1
+  }
+}

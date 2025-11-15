@@ -1,0 +1,74 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_ADAPTATIVA
+============================================================
+Fecha y hora: 2025-10-16 13:39:33
+Configuración utilizada: CONFIG_ADAPTATIVA
+Número de señales detectadas: 6
+Tiempo de ejecución: 2.522 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 536 x 450
+  Canales: 3
+  Píxeles totales: 241200
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Adaptativa - Hough adaptativo + Análisis textural + Color multirrango
+  Confianza promedio: 0.760
+  Candidatos Hough: 0
+  Candidatos contornos: 19
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (171, 374)
+    Radio: 24
+    Tipo: Informativa
+    Confianza: 0.855
+
+  Señal 2:
+    Centro: (147, 302)
+    Radio: 21
+    Tipo: Informativa
+    Confianza: 0.835
+
+  Señal 3:
+    Centro: (65, 201)
+    Radio: 37
+    Tipo: Informativa
+    Confianza: 0.736
+
+  Señal 4:
+    Centro: (258, 97)
+    Radio: 44
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 5:
+    Centro: (345, 401)
+    Radio: 48
+    Tipo: Detectada
+    Confianza: 0.706
+
+  Señal 6:
+    Centro: (428, 338)
+    Radio: 31
+    Tipo: Informativa
+    Confianza: 0.706
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 34.17
+  Radio mínimo: 21.00
+  Radio máximo: 48.00
+  Desviación estándar: 9.86
+
+ESTADÍSTICAS POR TIPO:
+  Informativa: 4 detecciones
+  Detectada: 2 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 34.17
+  Mínimo: 21.00
+  Máximo: 48.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.760
+  Mínimo: 0.706
+  Máximo: 0.855

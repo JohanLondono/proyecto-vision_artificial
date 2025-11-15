@@ -1,0 +1,54 @@
+REPORTE COMPARATIVO - DETECCIÓN DE SEMÁFOROS
+============================================================
+Fecha y hora: 2025-10-16 12:48:11
+Configuraciones ejecutadas: 4
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------------------------------------
+Configuración        Semáforos  Tiempo (s)   Confianza    Estado    
+--------------------------------------------------------------------------------
+CONFIG_PRECISION_ALTA 2          0.059        0.732        OK        
+CONFIG_ROBUSTA       0          0.146        0.000        OK        
+CONFIG_ADAPTATIVA    0          5.864        0.000        OK        
+CONFIG_BALANCED      2          0.039        0.626        OK        
+
+ANÁLISIS DETALLADO POR CONFIGURACIÓN:
+--------------------------------------------------
+
+CONFIG_PRECISION_ALTA:
+  - Semáforos detectados: 2
+  - Tiempo de ejecución: 0.059 segundos
+  - Confianza promedio: 0.732
+  - Candidatos iniciales: 8
+  - Área promedio: 1124.50 px²
+
+CONFIG_ROBUSTA:
+  - Semáforos detectados: 0
+  - Tiempo de ejecución: 0.146 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 16
+
+CONFIG_ADAPTATIVA:
+  - Semáforos detectados: 0
+  - Tiempo de ejecución: 5.864 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 352
+
+CONFIG_BALANCED:
+  - Semáforos detectados: 2
+  - Tiempo de ejecución: 0.039 segundos
+  - Confianza promedio: 0.626
+  - Candidatos iniciales: 10
+  - Área promedio: 1248.50 px²
+
+RECOMENDACIONES:
+--------------------
+- Configuración más rápida: CONFIG_BALANCED (0.039s)
+- Configuración con más detecciones: CONFIG_PRECISION_ALTA (2 semáforos)
+- Configuración más confiable: CONFIG_PRECISION_ALTA (confianza: 0.732)
+
+RECOMENDACIONES POR ESCENARIO:
+- CONFIG_PRECISION_ALTA: Mejor para imágenes de alta calidad con buena iluminación
+- CONFIG_ROBUSTA: Mejor para imágenes con ruido o condiciones adversas
+- CONFIG_ADAPTATIVA: Mejor para variedad de condiciones y tipos de semáforos
+- CONFIG_BALANCED: Mejor opción general, balance entre precisión y robustez

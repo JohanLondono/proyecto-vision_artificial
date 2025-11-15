@@ -1,0 +1,54 @@
+REPORTE COMPARATIVO - DETECCIÓN DE SEMÁFOROS
+============================================================
+Fecha y hora: 2025-10-16 15:51:29
+Configuraciones ejecutadas: 4
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------------------------------------
+Configuración        Semáforos  Tiempo (s)   Confianza    Estado    
+--------------------------------------------------------------------------------
+CONFIG_PRECISION_ALTA 1          0.033        0.818        OK        
+CONFIG_ROBUSTA       0          0.230        0.000        OK        
+CONFIG_ADAPTATIVA    0          1.421        0.000        OK        
+CONFIG_BALANCED      1          0.025        0.609        OK        
+
+ANÁLISIS DETALLADO POR CONFIGURACIÓN:
+--------------------------------------------------
+
+CONFIG_PRECISION_ALTA:
+  - Semáforos detectados: 1
+  - Tiempo de ejecución: 0.033 segundos
+  - Confianza promedio: 0.818
+  - Candidatos iniciales: 9
+  - Área promedio: 312.00 px²
+
+CONFIG_ROBUSTA:
+  - Semáforos detectados: 0
+  - Tiempo de ejecución: 0.230 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 18
+
+CONFIG_ADAPTATIVA:
+  - Semáforos detectados: 0
+  - Tiempo de ejecución: 1.421 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 88
+
+CONFIG_BALANCED:
+  - Semáforos detectados: 1
+  - Tiempo de ejecución: 0.025 segundos
+  - Confianza promedio: 0.609
+  - Candidatos iniciales: 9
+  - Área promedio: 285.00 px²
+
+RECOMENDACIONES:
+--------------------
+- Configuración más rápida: CONFIG_BALANCED (0.025s)
+- Configuración con más detecciones: CONFIG_PRECISION_ALTA (1 semáforos)
+- Configuración más confiable: CONFIG_PRECISION_ALTA (confianza: 0.818)
+
+RECOMENDACIONES POR ESCENARIO:
+- CONFIG_PRECISION_ALTA: Mejor para imágenes de alta calidad con buena iluminación
+- CONFIG_ROBUSTA: Mejor para imágenes con ruido o condiciones adversas
+- CONFIG_ADAPTATIVA: Mejor para variedad de condiciones y tipos de semáforos
+- CONFIG_BALANCED: Mejor opción general, balance entre precisión y robustez

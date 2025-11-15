@@ -1,0 +1,10 @@
+{
+  "sesiones_deteccion": 2,
+  "imagenes_procesadas": 1,
+  "videos_procesados": 1,
+  "sombreros_detectados": 25,
+  "tiempo_total_procesamiento": 18.16169571876526,
+  "modelos_mas_utilizados": {
+    "YOLO": 1
+  }
+}

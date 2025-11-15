@@ -1,0 +1,23 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+CONFIGURACIÓN: CONFIG_ROBUSTA
+============================================================
+Fecha y hora: 2025-10-16 13:31:27
+Configuración utilizada: CONFIG_ROBUSTA
+Número de semáforos detectados: 0
+Tiempo de ejecución: 6.977 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 5472 x 3648
+  Canales: 3
+  Píxeles totales: 19961856
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Robusta
+  Candidatos iniciales: 494
+  Confianza promedio: 0.000
+
+DETALLES ESPECÍFICOS - ROBUSTA:
+  - Algoritmos: Contornos + Color + GrabCut + Validación
+  - Enfoque: Robustez en condiciones difíciles
+  - Umbral de validación: 0.60
+

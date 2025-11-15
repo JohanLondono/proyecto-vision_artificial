@@ -1,0 +1,18 @@
+REPORTE COMPARATIVO - DETECCIÓN DE SEÑALES
+============================================================
+Fecha y hora: 2025-10-16 12:49:59
+Métodos ejecutados: 5
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------
+Método       Señales  Tiempo (s)   Estado    
+--------------------------------------------------
+HOUGH        ERROR    N/A          Error     
+FREAK        ERROR    N/A          Error     
+COLOR        ERROR    N/A          Error     
+LOG          ERROR    N/A          Error     
+COMBINADO    ERROR    N/A          Error     
+
+
+RECOMENDACIONES:
+--------------------

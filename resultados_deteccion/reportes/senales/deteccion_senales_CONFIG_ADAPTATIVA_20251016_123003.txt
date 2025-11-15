@@ -1,0 +1,272 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_ADAPTATIVA
+============================================================
+Fecha y hora: 2025-10-16 12:30:03
+Configuración utilizada: CONFIG_ADAPTATIVA
+Número de señales detectadas: 39
+Tiempo de ejecución: 27.875 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 650 x 441
+  Canales: 3
+  Píxeles totales: 286650
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Adaptativa - Hough adaptativo + Análisis textural + Color multirrango
+  Confianza promedio: 0.709
+  Candidatos Hough: 114
+  Candidatos contornos: 0
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (492, 240)
+    Radio: 111
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 2:
+    Centro: (378, 288)
+    Radio: 111
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 3:
+    Centro: (548, 250)
+    Radio: 86
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 4:
+    Centro: (312, 306)
+    Radio: 81
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 5:
+    Centro: (568, 152)
+    Radio: 71
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 6:
+    Centro: (92, 350)
+    Radio: 80
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 7:
+    Centro: (504, 310)
+    Radio: 56
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 8:
+    Centro: (496, 134)
+    Radio: 56
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 9:
+    Centro: (580, 204)
+    Radio: 56
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 10:
+    Centro: (334, 244)
+    Radio: 66
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 11:
+    Centro: (392, 240)
+    Radio: 71
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 12:
+    Centro: (68, 272)
+    Radio: 56
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 13:
+    Centro: (598, 258)
+    Radio: 51
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 14:
+    Centro: (388, 124)
+    Radio: 121
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 15:
+    Centro: (268, 256)
+    Radio: 48
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 16:
+    Centro: (262, 340)
+    Radio: 46
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 17:
+    Centro: (452, 160)
+    Radio: 54
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 18:
+    Centro: (52, 382)
+    Radio: 51
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 19:
+    Centro: (592, 108)
+    Radio: 38
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 20:
+    Centro: (138, 380)
+    Radio: 41
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 21:
+    Centro: (34, 234)
+    Radio: 31
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 22:
+    Centro: (616, 58)
+    Radio: 30
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 23:
+    Centro: (92, 192)
+    Radio: 69
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 24:
+    Centro: (446, 106)
+    Radio: 25
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 25:
+    Centro: (368, 404)
+    Radio: 28
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 26:
+    Centro: (201, 164)
+    Radio: 91
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 27:
+    Centro: (614, 103)
+    Radio: 31
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 28:
+    Centro: (230, 298)
+    Radio: 90
+    Tipo: Detectada
+    Confianza: 0.706
+
+  Señal 29:
+    Centro: (586, 385)
+    Radio: 52
+    Tipo: Detectada
+    Confianza: 0.703
+
+  Señal 30:
+    Centro: (266, 200)
+    Radio: 61
+    Tipo: Detectada
+    Confianza: 0.700
+
+  Señal 31:
+    Centro: (197, 363)
+    Radio: 75
+    Tipo: Detectada
+    Confianza: 0.694
+
+  Señal 32:
+    Centro: (388, 203)
+    Radio: 102
+    Tipo: Detectada
+    Confianza: 0.691
+
+  Señal 33:
+    Centro: (300, 194)
+    Radio: 109
+    Tipo: Detectada
+    Confianza: 0.687
+
+  Señal 34:
+    Centro: (348, 361)
+    Radio: 76
+    Tipo: Detectada
+    Confianza: 0.682
+
+  Señal 35:
+    Centro: (473, 341)
+    Radio: 72
+    Tipo: Detectada
+    Confianza: 0.681
+
+  Señal 36:
+    Centro: (575, 323)
+    Radio: 73
+    Tipo: Detectada
+    Confianza: 0.679
+
+  Señal 37:
+    Centro: (148, 294)
+    Radio: 93
+    Tipo: Detectada
+    Confianza: 0.675
+
+  Señal 38:
+    Centro: (198, 256)
+    Radio: 44
+    Tipo: Prohibicion
+    Confianza: 0.661
+
+  Señal 39:
+    Centro: (144, 232)
+    Radio: 120
+    Tipo: Detectada
+    Confianza: 0.655
+
+ESTADÍSTICAS:
+  Radio promedio: 67.26
+  Radio mínimo: 25.00
+  Radio máximo: 121.00
+  Desviación estándar: 26.24
+
+ESTADÍSTICAS POR TIPO:
+  Detectada: 38 detecciones
+  Prohibicion: 1 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 67.26
+  Mínimo: 25.00
+  Máximo: 121.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.709
+  Mínimo: 0.655
+  Máximo: 0.720

@@ -1,0 +1,87 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_ROBUSTA
+============================================================
+Fecha y hora: 2025-10-17 20:56:24
+Configuración utilizada: CONFIG_ROBUSTA
+Número de señales detectadas: 8
+Tiempo de ejecución: 1.171 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 450 x 265
+  Canales: 3
+  Píxeles totales: 119250
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Robusta - Contornos circulares + Color multicanal + Validación geométrica
+  Confianza promedio: 0.716
+  Candidatos Hough: 0
+  Candidatos contornos: 33
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (386, 172)
+    Radio: 16
+    Tipo: Informativa
+    Confianza: 0.896
+
+  Señal 2:
+    Centro: (49, 239)
+    Radio: 16
+    Tipo: Informativa
+    Confianza: 0.862
+
+  Señal 3:
+    Centro: (105, 164)
+    Radio: 37
+    Tipo: Prohibicion
+    Confianza: 0.723
+
+  Señal 4:
+    Centro: (12, 222)
+    Radio: 11
+    Tipo: Detectada
+    Confianza: 0.685
+
+  Señal 5:
+    Centro: (288, 212)
+    Radio: 26
+    Tipo: Detectada
+    Confianza: 0.648
+
+  Señal 6:
+    Centro: (365, 204)
+    Radio: 15
+    Tipo: Detectada
+    Confianza: 0.645
+
+  Señal 7:
+    Centro: (338, 221)
+    Radio: 16
+    Tipo: Detectada
+    Confianza: 0.637
+
+  Señal 8:
+    Centro: (205, 210)
+    Radio: 42
+    Tipo: Detectada
+    Confianza: 0.637
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 22.38
+  Radio mínimo: 11.00
+  Radio máximo: 42.00
+  Desviación estándar: 10.71
+
+ESTADÍSTICAS POR TIPO:
+  Informativa: 2 detecciones
+  Prohibicion: 1 detecciones
+  Detectada: 5 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 22.38
+  Mínimo: 11.00
+  Máximo: 42.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.716
+  Mínimo: 0.637
+  Máximo: 0.896

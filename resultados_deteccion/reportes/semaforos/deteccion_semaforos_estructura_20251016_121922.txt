@@ -1,0 +1,18 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+MÉTODO: ESTRUCTURA
+============================================================
+Fecha y hora: 2025-10-16 12:19:22
+Método utilizado: estructura
+Número de semáforos detectados: 0
+Tiempo de ejecución: 0.046 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+------------------------------
+  Dimensiones: 1280 x 854 píxeles
+  Canales: 3
+  Área total: 1,093,120 píxeles
+
+ANÁLISIS ESTRUCTURAL:
+------------------------------
+  Detección de formas rectangulares
+  Análisis de proporciones y disposición

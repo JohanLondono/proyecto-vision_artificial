@@ -1,0 +1,57 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+CONFIGURACIÓN: CONFIG_PRECISION_ALTA
+============================================================
+Fecha y hora: 2025-10-16 13:30:49
+Configuración utilizada: CONFIG_PRECISION_ALTA
+Número de semáforos detectados: 4
+Tiempo de ejecución: 0.076 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 1000 x 654
+  Canales: 3
+  Píxeles totales: 654000
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Precision Alta
+  Candidatos iniciales: 26
+  Confianza promedio: 0.711
+
+DETALLES ESPECÍFICOS - PRECISIÓN ALTA:
+  - Algoritmos: Color HSV + Estructura + Morfología + Validación
+  - Enfoque: Máxima precisión con validación estricta
+  - Umbral de validación: 0.65
+
+DETALLES DE SEMÁFOROS DETECTADOS:
+  Semáforo 1:
+    Centro: (818, 571)
+    Dimensiones: 16 x 23
+    Color detectado: rojo
+    Confianza: 0.772
+
+  Semáforo 2:
+    Centro: (578, 55)
+    Dimensiones: 36 x 37
+    Color detectado: rojo
+    Confianza: 0.716
+
+  Semáforo 3:
+    Centro: (886, 395)
+    Dimensiones: 41 x 73
+    Color detectado: rojo
+    Confianza: 0.681
+
+  Semáforo 4:
+    Centro: (181, 334)
+    Dimensiones: 25 x 88
+    Color detectado: rojo
+    Confianza: 0.676
+
+ESTADÍSTICAS:
+  Área promedio: 1723.25
+  Área mínima: 368.00
+  Área máxima: 2993.00
+  Desviación estándar: 978.43
+
+ANÁLISIS DE COLORES:
+  rojo: 4 detecciones
+

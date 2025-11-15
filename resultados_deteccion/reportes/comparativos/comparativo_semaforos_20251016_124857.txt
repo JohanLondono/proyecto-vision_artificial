@@ -1,0 +1,46 @@
+REPORTE COMPARATIVO - DETECCIÓN DE SEMÁFOROS
+============================================================
+Fecha y hora: 2025-10-16 12:48:57
+Métodos ejecutados: 4
+
+RESUMEN COMPARATIVO:
+------------------------------------------------------
+Método       Semáforos  Tiempo (s)   Estado    
+------------------------------------------------------
+COLOR        0          0.036        OK        
+ESTRUCTURA   0          0.044        OK        
+GRABCUT      0          0.004        OK        
+COMBINADO    0          0.050        OK        
+
+ANÁLISIS DE EFECTIVIDAD:
+------------------------------
+  COLOR:
+    - Detecciones: 0
+    - Tiempo: 0.036s
+    - Especialidad: Identificación por color de luces
+
+  ESTRUCTURA:
+    - Detecciones: 0
+    - Tiempo: 0.044s
+    - Especialidad: Análisis de forma y proporción
+
+  GRABCUT:
+    - Detecciones: 0
+    - Tiempo: 0.004s
+    - Especialidad: Segmentación precisa
+
+  COMBINADO:
+    - Detecciones: 0
+    - Tiempo: 0.050s
+    - Especialidad: Enfoque integral
+
+RECOMENDACIONES:
+--------------------
+  Método más rápido: GRABCUT (0.004s)
+  Método con más detecciones: COLOR (0 semáforos)
+
+  Recomendaciones específicas:
+    - COLOR: Mejor para condiciones de buena iluminación
+    - ESTRUCTURA: Mejor para semáforos tradicionales
+    - GRABCUT: Mejor para segmentación precisa
+    - COMBINADO: Enfoque más robusto general

@@ -1,0 +1,2 @@
+imagen,dimensiones,num_puntos_clave,dimension_descriptor,densidad_puntos,algoritmo_usado,fecha_analisis,valor_min_descriptores,valor_max_descriptores,promedio_descriptores,entropia_descriptores,diversidad_descriptores
+surf_analysis,768x768,500,128,0.0008477105034722222,SIFT,2025-10-27T22:28:34.725012,26.463062,36.714203,131086470.0,1.3774599864329224,524.1363915841096

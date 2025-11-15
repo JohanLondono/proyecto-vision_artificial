@@ -1,0 +1,18 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+MÉTODO: COLOR
+============================================================
+Fecha y hora: 2025-10-16 12:19:25
+Método utilizado: color
+Número de semáforos detectados: 0
+Tiempo de ejecución: 0.256 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+------------------------------
+  Dimensiones: 727 x 388 píxeles
+  Canales: 3
+  Área total: 282,076 píxeles
+
+ANÁLISIS DE COLOR:
+------------------------------
+  Detección por rangos HSV
+  Colores objetivo: Rojo, Amarillo, Verde

@@ -1,0 +1,82 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-17 21:00:13
+Configuración utilizada: CONFIG_BALANCED
+Número de semáforos detectados: 8
+Tiempo de ejecución: 0.104 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 1000 x 654
+  Canales: 3
+  Píxeles totales: 654000
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Equilibrada
+  Candidatos iniciales: 34
+  Confianza promedio: 0.639
+
+DETALLES ESPECÍFICOS - EQUILIBRADA:
+  - Algoritmos: Color + Estructura + Geometría + Consistencia
+  - Enfoque: Balance entre precisión y robustez
+  - Umbral de validación: 0.58
+
+DETALLES DE SEMÁFOROS DETECTADOS:
+  Semáforo 1:
+    Centro: (818, 571)
+    Dimensiones: 18 x 23
+    Color detectado: rojo
+    Confianza: 0.735
+
+  Semáforo 2:
+    Centro: (578, 55)
+    Dimensiones: 36 x 37
+    Color detectado: rojo
+    Confianza: 0.728
+
+  Semáforo 3:
+    Centro: (578, 102)
+    Dimensiones: 35 x 31
+    Color detectado: rojo
+    Confianza: 0.620
+
+  Semáforo 4:
+    Centro: (183, 337)
+    Dimensiones: 29 x 95
+    Color detectado: rojo
+    Confianza: 0.618
+
+  Semáforo 5:
+    Centro: (138, 247)
+    Dimensiones: 41 x 49
+    Color detectado: rojo
+    Confianza: 0.618
+
+  Semáforo 6:
+    Centro: (886, 397)
+    Dimensiones: 42 x 77
+    Color detectado: rojo
+    Confianza: 0.601
+
+  Semáforo 7:
+    Centro: (123, 477)
+    Dimensiones: 49 x 61
+    Color detectado: amarillo
+    Confianza: 0.598
+
+  Semáforo 8:
+    Centro: (31, 382)
+    Dimensiones: 56 x 69
+    Color detectado: rojo
+    Confianza: 0.591
+
+ESTADÍSTICAS:
+  Área promedio: 2210.25
+  Área mínima: 414.00
+  Área máxima: 3864.00
+  Desviación estándar: 1117.51
+
+ANÁLISIS DE COLORES:
+  rojo: 7 detecciones
+  amarillo: 1 detecciones
+

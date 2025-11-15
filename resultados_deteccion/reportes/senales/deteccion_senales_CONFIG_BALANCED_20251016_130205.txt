@@ -1,0 +1,80 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-16 13:02:05
+Configuración utilizada: CONFIG_BALANCED
+Número de señales detectadas: 7
+Tiempo de ejecución: 0.926 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 1280 x 854
+  Canales: 3
+  Píxeles totales: 1093120
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Equilibrada - Combinación equilibrada Hough + Contornos + Color
+  Confianza promedio: 0.725
+  Candidatos Hough: 0
+  Candidatos contornos: 10
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (782, 612)
+    Radio: 17
+    Tipo: Prohibicion
+    Confianza: 0.883
+
+  Señal 2:
+    Centro: (705, 607)
+    Radio: 44
+    Tipo: Prohibicion
+    Confianza: 0.761
+
+  Señal 3:
+    Centro: (440, 338)
+    Radio: 22
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 4:
+    Centro: (222, 94)
+    Radio: 23
+    Tipo: Detectada
+    Confianza: 0.715
+
+  Señal 5:
+    Centro: (449, 256)
+    Radio: 37
+    Tipo: Detectada
+    Confianza: 0.671
+
+  Señal 6:
+    Centro: (861, 560)
+    Radio: 38
+    Tipo: Detectada
+    Confianza: 0.669
+
+  Señal 7:
+    Centro: (857, 628)
+    Radio: 24
+    Tipo: Detectada
+    Confianza: 0.653
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 29.29
+  Radio mínimo: 17.00
+  Radio máximo: 44.00
+  Desviación estándar: 9.44
+
+ESTADÍSTICAS POR TIPO:
+  Prohibicion: 2 detecciones
+  Detectada: 5 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 29.29
+  Mínimo: 17.00
+  Máximo: 44.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.725
+  Mínimo: 0.653
+  Máximo: 0.883

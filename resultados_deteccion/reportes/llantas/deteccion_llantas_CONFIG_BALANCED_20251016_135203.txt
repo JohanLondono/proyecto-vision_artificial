@@ -1,0 +1,65 @@
+REPORTE DETALLADO DE DETECCIÓN DE LLANTAS
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-16 13:52:03
+Configuración utilizada: CONFIG_BALANCED
+Número de llantas detectadas: 8
+Tiempo de ejecución: 2.475 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 321 x 157
+  Canales: 3
+  Píxeles totales: 50397
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Equilibrada
+  Candidatos iniciales: 45
+  Confianza promedio: 0.650
+
+DETALLES DE LLANTAS DETECTADAS:
+  Llanta 1:
+    Centro: (292, 35)
+    Radio: 22
+    Confianza: 0.756
+
+  Llanta 2:
+    Centro: (46, 44)
+    Radio: 28
+    Confianza: 0.676
+
+  Llanta 3:
+    Centro: (173, 61)
+    Radio: 60
+    Confianza: 0.651
+
+  Llanta 4:
+    Centro: (236, 66)
+    Radio: 63
+    Confianza: 0.645
+
+  Llanta 5:
+    Centro: (207, 107)
+    Radio: 33
+    Confianza: 0.639
+
+  Llanta 6:
+    Centro: (100, 88)
+    Radio: 62
+    Confianza: 0.633
+
+  Llanta 7:
+    Centro: (262, 106)
+    Radio: 42
+    Confianza: 0.600
+
+  Llanta 8:
+    Centro: (113, 49)
+    Radio: 22
+    Confianza: 0.599
+
+ESTADÍSTICAS:
+  Radio promedio: 41.50
+  Radio mínimo: 22.00
+  Radio máximo: 63.00
+  Desviación estándar: 16.73
+

@@ -1,0 +1,60 @@
+REPORTE DETALLADO DE DETECCIÓN DE LLANTAS
+CONFIGURACIÓN: CONFIG_ADAPTATIVA
+============================================================
+Fecha y hora: 2025-10-16 13:52:00
+Configuración utilizada: CONFIG_ADAPTATIVA
+Número de llantas detectadas: 7
+Tiempo de ejecución: 1.691 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 321 x 157
+  Canales: 3
+  Píxeles totales: 50397
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Adaptativa
+  Candidatos iniciales: 21
+  Confianza promedio: 0.729
+
+DETALLES DE LLANTAS DETECTADAS:
+  Llanta 1:
+    Centro: (56, 124)
+    Radio: 25
+    Confianza: 0.800
+
+  Llanta 2:
+    Centro: (68, 44)
+    Radio: 30
+    Confianza: 0.764
+
+  Llanta 3:
+    Centro: (202, 50)
+    Radio: 45
+    Confianza: 0.762
+
+  Llanta 4:
+    Centro: (130, 116)
+    Radio: 34
+    Confianza: 0.724
+
+  Llanta 5:
+    Centro: (102, 88)
+    Radio: 64
+    Confianza: 0.705
+
+  Llanta 6:
+    Centro: (164, 70)
+    Radio: 53
+    Confianza: 0.682
+
+  Llanta 7:
+    Centro: (244, 106)
+    Radio: 43
+    Confianza: 0.666
+
+ESTADÍSTICAS:
+  Radio promedio: 42.00
+  Radio mínimo: 25.00
+  Radio máximo: 64.00
+  Desviación estándar: 12.60
+

@@ -1,0 +1,57 @@
+# ===============================================
+# DEPENDENCIAS COMPLETAS - SISTEMA DETECCIÓN VEHICULAR CON IA
+# ===============================================
+# Todas las dependencias para funcionalidad completa con redes neuronales
+
+# ===============================================
+# DEPENDENCIAS BÁSICAS
+# ===============================================
+opencv-contrib-python
+opencv-python
+numpy
+pandas
+scikit-image
+scikit-learn
+scipy
+pillow
+matplotlib
+seaborn
+tqdm
+
+# ===============================================
+# REDES NEURONALES Y DEEP LEARNING
+# ===============================================
+
+# PyTorch ecosystem
+torch
+torchvision
+
+# TensorFlow
+tensorflow
+
+# YOLO y detección moderna
+ultralytics
+
+# Transformers y modelos preentrenados
+transformers
+sentence-transformers
+
+# ===============================================
+# UTILIDADES ADICIONALES
+# ===============================================
+
+# Procesamiento de texto
+nltk
+
+# APIs y servicios
+requests
+python-dotenv
+
+# Desarrollo y testing
+jupyter
+ipython
+
+# ===============================================
+# INSTALACIÓN:
+# pip install -r requirements-full.txt
+# ===============================================

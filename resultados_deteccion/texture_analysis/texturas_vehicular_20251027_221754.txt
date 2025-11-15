@@ -1,0 +1,42 @@
+ANÁLISIS DE TEXTURAS - IDENTIFICACIÓN VEHICULAR
+============================================================
+
+IMAGEN: sombrero4.jpg
+----------------------------------------
+Ruta: ./images\sombrero4.jpg
+Dimensiones: (768, 768, 3)
+Fecha: 2025-10-27T22:17:51.488173
+
+ESTADÍSTICAS DE PRIMER ORDEN:
+  Media: 116.095567
+  Varianza: 4323.245628
+  Desviación_Estándar: 65.751393
+  Entropía: 7.811665
+
+ESTADÍSTICAS DE SEGUNDO ORDEN:
+  Contraste: 86.685763
+  Disimilitud: 4.400020
+  Homogeneidad: 0.362173
+  Energía: 0.023365
+  Correlación: 0.989979
+  Media_GLCM: 0.000015
+  Desviación_Estándar_GLCM: 0.000090
+  Entropía_GLCM: 47.952330
+
+ESTADÍSTICAS LBP (LOCAL BINARY PATTERNS):
+  LBP_Entropía: 2.806487
+  LBP_Uniformidad: 0.182105
+  LBP_Contraste: 4.075715
+  LBP_Homogeneidad: 0.518610
+  LBP_Disimilitud: 1.525282
+  LBP_Correlación: 1.000000
+  LBP_Media_Imagen: 4.931325
+  LBP_Varianza_Imagen: 4.075715
+  LBP_Desviación_Imagen: 2.018840
+  LBP_Porcentaje_Uniformes: 83.207533
+  LBP_Radio: 1
+  LBP_Puntos: 8
+  LBP_Método: uniform
+
+============================================================
+

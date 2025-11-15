@@ -1,0 +1,40 @@
+REPORTE COMPARATIVO - DETECCIÓN DE LLANTAS
+============================================================
+Fecha y hora: 2025-10-16 12:25:40
+Configuraciones ejecutadas: 4
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------------------------------------
+Configuración        Llantas  Tiempo (s)   Confianza    Estado    
+--------------------------------------------------------------------------------
+CONFIG_PRECISION_ALTA 0        0.000        0.000        ERROR     
+CONFIG_ROBUSTA       0        0.034        0.000        OK        
+CONFIG_ADAPTATIVA    0        0.000        0.000        ERROR     
+CONFIG_BALANCED      0        0.000        0.000        ERROR     
+
+ANÁLISIS DETALLADO POR CONFIGURACIÓN:
+--------------------------------------------------
+
+CONFIG_PRECISION_ALTA:
+  - Error: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\arithm.cpp:2052: error: (-209:Sizes of input arguments do not match) The lower boundary is neither an array of the same size and same type as src, nor a scalar in function 'cv::inRange'
+
+
+CONFIG_ROBUSTA:
+  - Llantas detectadas: 0
+  - Tiempo de ejecución: 0.034 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 0
+
+CONFIG_ADAPTATIVA:
+  - Error: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\arithm.cpp:2052: error: (-209:Sizes of input arguments do not match) The lower boundary is neither an array of the same size and same type as src, nor a scalar in function 'cv::inRange'
+
+
+CONFIG_BALANCED:
+  - Error: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\core\src\arithm.cpp:2052: error: (-209:Sizes of input arguments do not match) The lower boundary is neither an array of the same size and same type as src, nor a scalar in function 'cv::inRange'
+
+
+RECOMENDACIONES:
+--------------------
+- Configuración más rápida: CONFIG_ROBUSTA (0.034s)
+- Configuración con más detecciones: CONFIG_ROBUSTA (0 llantas)
+- Configuración más confiable: CONFIG_ROBUSTA (confianza: 0.000)

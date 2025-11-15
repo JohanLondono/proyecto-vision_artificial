@@ -1,0 +1,30 @@
+REPORTE DETALLADO DE DETECCIÓN DE LLANTAS
+CONFIGURACIÓN: CONFIG_ROBUSTA
+============================================================
+Fecha y hora: 2025-10-16 13:51:58
+Configuración utilizada: CONFIG_ROBUSTA
+Número de llantas detectadas: 1
+Tiempo de ejecución: 0.078 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 321 x 157
+  Canales: 3
+  Píxeles totales: 50397
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Robusta
+  Candidatos iniciales: 1
+  Confianza promedio: 0.622
+
+DETALLES DE LLANTAS DETECTADAS:
+  Llanta 1:
+    Centro: (255, 86)
+    Radio: 20
+    Confianza: 0.622
+
+ESTADÍSTICAS:
+  Radio promedio: 20.00
+  Radio mínimo: 20.00
+  Radio máximo: 20.00
+  Desviación estándar: 0.00
+

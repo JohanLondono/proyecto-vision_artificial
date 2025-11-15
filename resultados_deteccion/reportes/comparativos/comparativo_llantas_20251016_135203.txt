@@ -1,0 +1,50 @@
+REPORTE COMPARATIVO - DETECCIÓN DE LLANTAS
+============================================================
+Fecha y hora: 2025-10-16 13:52:03
+Configuraciones ejecutadas: 4
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------------------------------------
+Configuración        Llantas  Tiempo (s)   Confianza    Estado    
+--------------------------------------------------------------------------------
+CONFIG_PRECISION_ALTA 9        2.714        0.648        OK        
+CONFIG_ROBUSTA       1        0.078        0.622        OK        
+CONFIG_ADAPTATIVA    7        1.691        0.729        OK        
+CONFIG_BALANCED      8        2.475        0.650        OK        
+
+ANÁLISIS DETALLADO POR CONFIGURACIÓN:
+--------------------------------------------------
+
+CONFIG_PRECISION_ALTA:
+  - Llantas detectadas: 9
+  - Tiempo de ejecución: 2.714 segundos
+  - Confianza promedio: 0.648
+  - Candidatos iniciales: 56
+  - Radio promedio: 39.67 px
+
+CONFIG_ROBUSTA:
+  - Llantas detectadas: 1
+  - Tiempo de ejecución: 0.078 segundos
+  - Confianza promedio: 0.622
+  - Candidatos iniciales: 1
+  - Radio promedio: 20.00 px
+
+CONFIG_ADAPTATIVA:
+  - Llantas detectadas: 7
+  - Tiempo de ejecución: 1.691 segundos
+  - Confianza promedio: 0.729
+  - Candidatos iniciales: 21
+  - Radio promedio: 42.00 px
+
+CONFIG_BALANCED:
+  - Llantas detectadas: 8
+  - Tiempo de ejecución: 2.475 segundos
+  - Confianza promedio: 0.650
+  - Candidatos iniciales: 45
+  - Radio promedio: 41.50 px
+
+RECOMENDACIONES:
+--------------------
+- Configuración más rápida: CONFIG_ROBUSTA (0.078s)
+- Configuración con más detecciones: CONFIG_PRECISION_ALTA (9 llantas)
+- Configuración más confiable: CONFIG_ADAPTATIVA (confianza: 0.729)

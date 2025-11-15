@@ -1,0 +1,70 @@
+REPORTE DETALLADO DE DETECCIÓN DE LLANTAS
+CONFIGURACIÓN: CONFIG_PRECISION_ALTA
+============================================================
+Fecha y hora: 2025-10-16 13:51:58
+Configuración utilizada: CONFIG_PRECISION_ALTA
+Número de llantas detectadas: 9
+Tiempo de ejecución: 2.714 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 321 x 157
+  Canales: 3
+  Píxeles totales: 50397
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Precision Alta
+  Candidatos iniciales: 56
+  Confianza promedio: 0.648
+
+DETALLES DE LLANTAS DETECTADAS:
+  Llanta 1:
+    Centro: (246, 126)
+    Radio: 20
+    Confianza: 0.704
+
+  Llanta 2:
+    Centro: (253, 65)
+    Radio: 60
+    Confianza: 0.659
+
+  Llanta 3:
+    Centro: (162, 62)
+    Radio: 56
+    Confianza: 0.656
+
+  Llanta 4:
+    Centro: (70, 136)
+    Radio: 19
+    Confianza: 0.656
+
+  Llanta 5:
+    Centro: (196, 100)
+    Radio: 32
+    Confianza: 0.641
+
+  Llanta 6:
+    Centro: (112, 90)
+    Radio: 65
+    Confianza: 0.640
+
+  Llanta 7:
+    Centro: (32, 50)
+    Radio: 30
+    Confianza: 0.636
+
+  Llanta 8:
+    Centro: (53, 95)
+    Radio: 50
+    Confianza: 0.635
+
+  Llanta 9:
+    Centro: (151, 63)
+    Radio: 25
+    Confianza: 0.600
+
+ESTADÍSTICAS:
+  Radio promedio: 39.67
+  Radio mínimo: 19.00
+  Radio máximo: 65.00
+  Desviación estándar: 17.03
+

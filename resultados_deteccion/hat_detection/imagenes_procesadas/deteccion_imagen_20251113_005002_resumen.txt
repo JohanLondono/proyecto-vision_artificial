@@ -1,0 +1,19 @@
+REPORTE DE DETECCIÓN DE SOMBREROS
+==================================================
+
+Imagen: demo_persona_sombrero.jpg
+Fecha: 2025-11-13T00:50:02.154773
+Métodos utilizados: YOLO
+
+RESUMEN DE DETECCIONES:
+-------------------------
+Métodos exitosos: 1
+Detecciones totales: 1
+Confianza promedio: 0.800
+Mejor resultado: YOLO
+
+RENDIMIENTO:
+------------
+Tiempo total: 0.369 segundos
+Métodos ejecutados: 1
+Detecciones exitosas: 1

@@ -1,0 +1,107 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+CONFIGURACIÓN: CONFIG_PRECISION_ALTA
+============================================================
+Fecha y hora: 2025-10-17 21:00:40
+Configuración utilizada: CONFIG_PRECISION_ALTA
+Número de semáforos detectados: 12
+Tiempo de ejecución: 0.778 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 5472 x 3648
+  Canales: 3
+  Píxeles totales: 19961856
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Precision Alta
+  Candidatos iniciales: 381
+  Confianza promedio: 0.699
+
+DETALLES ESPECÍFICOS - PRECISIÓN ALTA:
+  - Algoritmos: Color HSV + Estructura + Morfología + Validación
+  - Enfoque: Máxima precisión con validación estricta
+  - Umbral de validación: 0.65
+
+DETALLES DE SEMÁFOROS DETECTADOS:
+  Semáforo 1:
+    Centro: (1551, 2054)
+    Dimensiones: 15 x 19
+    Color detectado: amarillo
+    Confianza: 0.748
+
+  Semáforo 2:
+    Centro: (4690, 1703)
+    Dimensiones: 39 x 71
+    Color detectado: rojo
+    Confianza: 0.738
+
+  Semáforo 3:
+    Centro: (2636, 696)
+    Dimensiones: 9 x 32
+    Color detectado: amarillo
+    Confianza: 0.726
+
+  Semáforo 4:
+    Centro: (2193, 1162)
+    Dimensiones: 17 x 31
+    Color detectado: amarillo
+    Confianza: 0.725
+
+  Semáforo 5:
+    Centro: (353, 1694)
+    Dimensiones: 15 x 29
+    Color detectado: amarillo
+    Confianza: 0.697
+
+  Semáforo 6:
+    Centro: (3212, 517)
+    Dimensiones: 16 x 27
+    Color detectado: amarillo
+    Confianza: 0.696
+
+  Semáforo 7:
+    Centro: (981, 634)
+    Dimensiones: 15 x 13
+    Color detectado: amarillo
+    Confianza: 0.694
+
+  Semáforo 8:
+    Centro: (3524, 840)
+    Dimensiones: 24 x 32
+    Color detectado: amarillo
+    Confianza: 0.685
+
+  Semáforo 9:
+    Centro: (3565, 2069)
+    Dimensiones: 17 x 26
+    Color detectado: amarillo
+    Confianza: 0.682
+
+  Semáforo 10:
+    Centro: (2043, 1686)
+    Dimensiones: 53 x 86
+    Color detectado: desconocido
+    Confianza: 0.671
+
+  Semáforo 11:
+    Centro: (248, 1969)
+    Dimensiones: 28 x 14
+    Color detectado: rojo
+    Confianza: 0.668
+
+  Semáforo 12:
+    Centro: (3440, 1287)
+    Dimensiones: 21 x 23
+    Color detectado: amarillo
+    Confianza: 0.655
+
+ESTADÍSTICAS:
+  Área promedio: 964.50
+  Área mínima: 195.00
+  Área máxima: 4558.00
+  Desviación estándar: 1268.45
+
+ANÁLISIS DE COLORES:
+  amarillo: 9 detecciones
+  rojo: 2 detecciones
+  desconocido: 1 detecciones
+

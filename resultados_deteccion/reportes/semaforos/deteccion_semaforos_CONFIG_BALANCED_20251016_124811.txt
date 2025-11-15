@@ -1,0 +1,46 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEMÁFOROS
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-16 12:48:11
+Configuración utilizada: CONFIG_BALANCED
+Número de semáforos detectados: 2
+Tiempo de ejecución: 0.039 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 536 x 450
+  Canales: 3
+  Píxeles totales: 241200
+
+DETALLES DE LA CONFIGURACIÓN:
+  Nombre: Equilibrada
+  Candidatos iniciales: 10
+  Confianza promedio: 0.626
+
+DETALLES ESPECÍFICOS - EQUILIBRADA:
+  - Algoritmos: Color + Estructura + Geometría + Consistencia
+  - Enfoque: Balance entre precisión y robustez
+  - Umbral de validación: 0.58
+
+DETALLES DE SEMÁFOROS DETECTADOS:
+  Semáforo 1:
+    Centro: (519, 45)
+    Dimensiones: 34 x 58
+    Color detectado: rojo
+    Confianza: 0.660
+
+  Semáforo 2:
+    Centro: (291, 317)
+    Dimensiones: 25 x 21
+    Color detectado: verde
+    Confianza: 0.593
+
+ESTADÍSTICAS:
+  Área promedio: 1248.50
+  Área mínima: 525.00
+  Área máxima: 1972.00
+  Desviación estándar: 723.50
+
+ANÁLISIS DE COLORES:
+  rojo: 1 detecciones
+  verde: 1 detecciones
+

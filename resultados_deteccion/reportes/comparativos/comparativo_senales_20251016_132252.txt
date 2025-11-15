@@ -1,0 +1,53 @@
+REPORTE COMPARATIVO - DETECCIÓN DE SEÑALES
+============================================================
+Fecha y hora: 2025-10-16 13:22:52
+Configuraciones ejecutadas: 4
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------------------------------------
+Configuración        Señales  Tiempo (s)   Confianza    Estado    
+--------------------------------------------------------------------------------
+CONFIG_PRECISION_ALTA 0        0.070        0.000        OK        
+CONFIG_ROBUSTA       8        5.659        0.667        OK        
+CONFIG_ADAPTATIVA    2        2.118        0.716        OK        
+CONFIG_BALANCED      2        2.141        0.717        OK        
+
+ANÁLISIS DETALLADO POR CONFIGURACIÓN:
+--------------------------------------------------
+
+CONFIG_PRECISION_ALTA:
+  - Señales detectadas: 0
+  - Tiempo de ejecución: 0.070 segundos
+  - Confianza promedio: 0.000
+  - Candidatos Hough: 0
+  - Candidatos contornos: 0
+
+CONFIG_ROBUSTA:
+  - Señales detectadas: 8
+  - Tiempo de ejecución: 5.659 segundos
+  - Confianza promedio: 0.667
+  - Candidatos Hough: 0
+  - Candidatos contornos: 44
+  - Radio promedio: 25.25 px
+
+CONFIG_ADAPTATIVA:
+  - Señales detectadas: 2
+  - Tiempo de ejecución: 2.118 segundos
+  - Confianza promedio: 0.716
+  - Candidatos Hough: 0
+  - Candidatos contornos: 13
+  - Radio promedio: 28.50 px
+
+CONFIG_BALANCED:
+  - Señales detectadas: 2
+  - Tiempo de ejecución: 2.141 segundos
+  - Confianza promedio: 0.717
+  - Candidatos Hough: 0
+  - Candidatos contornos: 13
+  - Radio promedio: 28.50 px
+
+RECOMENDACIONES:
+--------------------
+- Configuración más rápida: CONFIG_PRECISION_ALTA (0.070s)
+- Configuración con más detecciones: CONFIG_ROBUSTA (8 señales)
+- Configuración más confiable: CONFIG_BALANCED (confianza: 0.717)

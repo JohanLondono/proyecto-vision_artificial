@@ -1,0 +1,117 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_ROBUSTA
+============================================================
+Fecha y hora: 2025-10-16 13:49:04
+Configuración utilizada: CONFIG_ROBUSTA
+Número de señales detectadas: 13
+Tiempo de ejecución: 1.866 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 728 x 716
+  Canales: 3
+  Píxeles totales: 521248
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Robusta - Contornos circulares + Color multicanal + Validación geométrica
+  Confianza promedio: 0.765
+  Candidatos Hough: 0
+  Candidatos contornos: 48
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (41, 389)
+    Radio: 25
+    Tipo: Prohibicion
+    Confianza: 0.972
+
+  Señal 2:
+    Centro: (135, 384)
+    Radio: 28
+    Tipo: Prohibicion
+    Confianza: 0.947
+
+  Señal 3:
+    Centro: (412, 574)
+    Radio: 58
+    Tipo: Prohibicion
+    Confianza: 0.791
+
+  Señal 4:
+    Centro: (491, 395)
+    Radio: 14
+    Tipo: Advertencia
+    Confianza: 0.753
+
+  Señal 5:
+    Centro: (96, 616)
+    Radio: 10
+    Tipo: Prohibicion
+    Confianza: 0.752
+
+  Señal 6:
+    Centro: (716, 584)
+    Radio: 11
+    Tipo: Advertencia
+    Confianza: 0.751
+
+  Señal 7:
+    Centro: (534, 341)
+    Radio: 19
+    Tipo: Prohibicion
+    Confianza: 0.746
+
+  Señal 8:
+    Centro: (656, 584)
+    Radio: 20
+    Tipo: Prohibicion
+    Confianza: 0.745
+
+  Señal 9:
+    Centro: (505, 497)
+    Radio: 28
+    Tipo: Prohibicion
+    Confianza: 0.738
+
+  Señal 10:
+    Centro: (63, 607)
+    Radio: 22
+    Tipo: Prohibicion
+    Confianza: 0.721
+
+  Señal 11:
+    Centro: (670, 350)
+    Radio: 32
+    Tipo: Detectada
+    Confianza: 0.684
+
+  Señal 12:
+    Centro: (614, 528)
+    Radio: 27
+    Tipo: Prohibicion
+    Confianza: 0.684
+
+  Señal 13:
+    Centro: (572, 395)
+    Radio: 51
+    Tipo: Advertencia
+    Confianza: 0.663
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 26.54
+  Radio mínimo: 10.00
+  Radio máximo: 58.00
+  Desviación estándar: 13.64
+
+ESTADÍSTICAS POR TIPO:
+  Prohibicion: 9 detecciones
+  Advertencia: 3 detecciones
+  Detectada: 1 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 26.54
+  Mínimo: 10.00
+  Máximo: 58.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.765
+  Mínimo: 0.663
+  Máximo: 0.972

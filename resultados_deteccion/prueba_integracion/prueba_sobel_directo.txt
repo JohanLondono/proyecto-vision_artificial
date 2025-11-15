@@ -1,0 +1,51 @@
+ESTADÍSTICAS DE DETECCIÓN DE BORDES - SOBEL
+============================================================
+
+INFORMACIÓN GENERAL:
+------------------------------
+Metodo: Sobel_ambas
+Fecha Analisis: 2025-10-27T21:53:55.853960
+Dimensiones Imagen: (400, 400)
+Tamaño Kernel: 3
+Dirección: ambas
+Umbral Otsu: 62.00
+
+ESTADÍSTICAS DE MAGNITUD DEL GRADIENTE:
+----------------------------------------
+Magnitud Media: 52.6360
+Magnitud Mediana: 31.7805
+Magnitud Std: 95.7512
+Magnitud Min: 0.0000
+Magnitud Max: 1015.2635
+Magnitud Percentil 25: 20.0000
+Magnitud Percentil 75: 46.6905
+Magnitud Percentil 90: 65.8027
+Magnitud Percentil 95: 121.6602
+
+ESTADÍSTICAS DE BORDES DETECTADOS:
+----------------------------------------
+Pixeles Borde: 6761
+Porcentaje Bordes: 4.2256
+Densidad Bordes: 0.0423
+Intensidad Bordes Media: 114.4041
+Intensidad Bordes Std: 68.6327
+Num Componentes Conexas: 79.0000
+
+ESTADÍSTICAS DE GRADIENTES X e Y:
+----------------------------------------
+Gradiente X Media: -0.1149
+Gradiente X Std: 70.3066
+Gradiente X Min: -762.0000
+Gradiente X Max: 902.0000
+Gradiente Y Media: 0.0731
+Gradiente Y Std: 83.6409
+Gradiente Y Min: -855.0000
+Gradiente Y Max: 851.0000
+
+ESTADÍSTICAS DE DIRECCIÓN:
+----------------------------------------
+Direccion Analizada: ambas
+Direccion Media: 3.2682
+Direccion Std: 104.0381
+Direccion Min: -179.9144
+Direccion Max: 180.0000

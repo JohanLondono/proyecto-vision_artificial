@@ -1,0 +1,29 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_PRECISION_ALTA
+============================================================
+Fecha y hora: 2025-10-16 15:51:47
+Configuración utilizada: CONFIG_PRECISION_ALTA
+Número de señales detectadas: 0
+Tiempo de ejecución: 0.032 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 300 x 168
+  Canales: 3
+  Píxeles totales: 50400
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Precisión Alta - Hough multiescala + Color HSV + Validación morfológica estricta
+  Confianza promedio: 0.000
+  Candidatos Hough: 0
+  Candidatos contornos: 0
+
+ESTADÍSTICAS POR TIPO:
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 0.00
+  Mínimo: 0.00
+  Máximo: 0.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.000
+  Mínimo: 0.000
+  Máximo: 0.000

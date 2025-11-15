@@ -1,0 +1,54 @@
+REPORTE COMPARATIVO - DETECCIÓN DE SEMÁFOROS
+============================================================
+Fecha y hora: 2025-10-16 13:26:28
+Configuraciones ejecutadas: 4
+
+RESUMEN COMPARATIVO:
+--------------------------------------------------------------------------------
+Configuración        Semáforos  Tiempo (s)   Confianza    Estado    
+--------------------------------------------------------------------------------
+CONFIG_PRECISION_ALTA 1          0.026        0.734        OK        
+CONFIG_ROBUSTA       0          0.123        0.000        OK        
+CONFIG_ADAPTATIVA    0          1.217        0.000        OK        
+CONFIG_BALANCED      2          0.024        0.642        OK        
+
+ANÁLISIS DETALLADO POR CONFIGURACIÓN:
+--------------------------------------------------
+
+CONFIG_PRECISION_ALTA:
+  - Semáforos detectados: 1
+  - Tiempo de ejecución: 0.026 segundos
+  - Confianza promedio: 0.734
+  - Candidatos iniciales: 4
+  - Área promedio: 494.00 px²
+
+CONFIG_ROBUSTA:
+  - Semáforos detectados: 0
+  - Tiempo de ejecución: 0.123 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 10
+
+CONFIG_ADAPTATIVA:
+  - Semáforos detectados: 0
+  - Tiempo de ejecución: 1.217 segundos
+  - Confianza promedio: 0.000
+  - Candidatos iniciales: 79
+
+CONFIG_BALANCED:
+  - Semáforos detectados: 2
+  - Tiempo de ejecución: 0.024 segundos
+  - Confianza promedio: 0.642
+  - Candidatos iniciales: 4
+  - Área promedio: 1223.50 px²
+
+RECOMENDACIONES:
+--------------------
+- Configuración más rápida: CONFIG_BALANCED (0.024s)
+- Configuración con más detecciones: CONFIG_BALANCED (2 semáforos)
+- Configuración más confiable: CONFIG_PRECISION_ALTA (confianza: 0.734)
+
+RECOMENDACIONES POR ESCENARIO:
+- CONFIG_PRECISION_ALTA: Mejor para imágenes de alta calidad con buena iluminación
+- CONFIG_ROBUSTA: Mejor para imágenes con ruido o condiciones adversas
+- CONFIG_ADAPTATIVA: Mejor para variedad de condiciones y tipos de semáforos
+- CONFIG_BALANCED: Mejor opción general, balance entre precisión y robustez

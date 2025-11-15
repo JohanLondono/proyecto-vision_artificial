@@ -1,0 +1,69 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-16 13:24:53
+Configuración utilizada: CONFIG_BALANCED
+Número de señales detectadas: 5
+Tiempo de ejecución: 0.429 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 450 x 265
+  Canales: 3
+  Píxeles totales: 119250
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Equilibrada - Combinación equilibrada Hough + Contornos + Color
+  Confianza promedio: 0.774
+  Candidatos Hough: 0
+  Candidatos contornos: 11
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (386, 172)
+    Radio: 16
+    Tipo: Informativa
+    Confianza: 0.907
+
+  Señal 2:
+    Centro: (49, 239)
+    Radio: 16
+    Tipo: Informativa
+    Confianza: 0.877
+
+  Señal 3:
+    Centro: (105, 164)
+    Radio: 37
+    Tipo: Prohibicion
+    Confianza: 0.754
+
+  Señal 4:
+    Centro: (288, 212)
+    Radio: 26
+    Tipo: Detectada
+    Confianza: 0.673
+
+  Señal 5:
+    Centro: (205, 210)
+    Radio: 42
+    Tipo: Detectada
+    Confianza: 0.659
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 27.40
+  Radio mínimo: 16.00
+  Radio máximo: 42.00
+  Desviación estándar: 10.65
+
+ESTADÍSTICAS POR TIPO:
+  Informativa: 2 detecciones
+  Prohibicion: 1 detecciones
+  Detectada: 2 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 27.40
+  Mínimo: 16.00
+  Máximo: 42.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.774
+  Mínimo: 0.659
+  Máximo: 0.907

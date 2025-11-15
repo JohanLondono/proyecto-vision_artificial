@@ -1,0 +1,117 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_ROBUSTA
+============================================================
+Fecha y hora: 2025-10-16 13:39:54
+Configuración utilizada: CONFIG_ROBUSTA
+Número de señales detectadas: 13
+Tiempo de ejecución: 7.552 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 536 x 450
+  Canales: 3
+  Píxeles totales: 241200
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Robusta - Contornos circulares + Color multicanal + Validación geométrica
+  Confianza promedio: 0.723
+  Candidatos Hough: 0
+  Candidatos contornos: 62
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (242, 139)
+    Radio: 10
+    Tipo: Informativa
+    Confianza: 0.995
+
+  Señal 2:
+    Centro: (171, 374)
+    Radio: 24
+    Tipo: Informativa
+    Confianza: 0.844
+
+  Señal 3:
+    Centro: (147, 302)
+    Radio: 21
+    Tipo: Informativa
+    Confianza: 0.815
+
+  Señal 4:
+    Centro: (479, 140)
+    Radio: 13
+    Tipo: Prohibicion
+    Confianza: 0.772
+
+  Señal 5:
+    Centro: (65, 201)
+    Radio: 37
+    Tipo: Informativa
+    Confianza: 0.703
+
+  Señal 6:
+    Centro: (400, 145)
+    Radio: 20
+    Tipo: Detectada
+    Confianza: 0.685
+
+  Señal 7:
+    Centro: (258, 97)
+    Radio: 44
+    Tipo: Detectada
+    Confianza: 0.685
+
+  Señal 8:
+    Centro: (372, 336)
+    Radio: 16
+    Tipo: Detectada
+    Confianza: 0.685
+
+  Señal 9:
+    Centro: (428, 338)
+    Radio: 31
+    Tipo: Informativa
+    Confianza: 0.680
+
+  Señal 10:
+    Centro: (345, 401)
+    Radio: 48
+    Tipo: Detectada
+    Confianza: 0.669
+
+  Señal 11:
+    Centro: (243, 64)
+    Radio: 11
+    Tipo: Informativa
+    Confianza: 0.651
+
+  Señal 12:
+    Centro: (331, 153)
+    Radio: 153
+    Tipo: Detectada
+    Confianza: 0.615
+
+  Señal 13:
+    Centro: (329, 318)
+    Radio: 44
+    Tipo: Detectada
+    Confianza: 0.606
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 36.31
+  Radio mínimo: 10.00
+  Radio máximo: 153.00
+  Desviación estándar: 35.99
+
+ESTADÍSTICAS POR TIPO:
+  Informativa: 6 detecciones
+  Prohibicion: 1 detecciones
+  Detectada: 6 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 36.31
+  Mínimo: 10.00
+  Máximo: 153.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.723
+  Mínimo: 0.606
+  Máximo: 0.995

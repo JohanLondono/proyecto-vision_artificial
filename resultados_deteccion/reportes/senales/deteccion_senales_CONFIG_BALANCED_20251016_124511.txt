@@ -1,0 +1,110 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-16 12:45:11
+Configuración utilizada: CONFIG_BALANCED
+Número de señales detectadas: 12
+Tiempo de ejecución: 5.655 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 450 x 265
+  Canales: 3
+  Píxeles totales: 119250
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Equilibrada - Combinación equilibrada Hough + Contornos + Color
+  Confianza promedio: 0.691
+  Candidatos Hough: 28
+  Candidatos contornos: 1
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (400, 50)
+    Radio: 49
+    Tipo: Informativa
+    Confianza: 0.737
+
+  Señal 2:
+    Centro: (320, 30)
+    Radio: 29
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 3:
+    Centro: (224, 28)
+    Radio: 24
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 4:
+    Centro: (70, 150)
+    Radio: 68
+    Tipo: Detectada
+    Confianza: 0.719
+
+  Señal 5:
+    Centro: (48, 86)
+    Radio: 46
+    Tipo: Detectada
+    Confianza: 0.714
+
+  Señal 6:
+    Centro: (154, 104)
+    Radio: 58
+    Tipo: Detectada
+    Confianza: 0.708
+
+  Señal 7:
+    Centro: (124, 168)
+    Radio: 89
+    Tipo: Detectada
+    Confianza: 0.707
+
+  Señal 8:
+    Centro: (224, 84)
+    Radio: 80
+    Tipo: Detectada
+    Confianza: 0.676
+
+  Señal 9:
+    Centro: (358, 90)
+    Radio: 85
+    Tipo: Detectada
+    Confianza: 0.674
+
+  Señal 10:
+    Centro: (328, 170)
+    Radio: 87
+    Tipo: Detectada
+    Confianza: 0.646
+
+  Señal 11:
+    Centro: (216, 142)
+    Radio: 118
+    Tipo: Detectada
+    Confianza: 0.635
+
+  Señal 12:
+    Centro: (392, 140)
+    Radio: 46
+    Tipo: Detectada
+    Confianza: 0.635
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 64.92
+  Radio mínimo: 24.00
+  Radio máximo: 118.00
+  Desviación estándar: 26.63
+
+ESTADÍSTICAS POR TIPO:
+  Informativa: 1 detecciones
+  Detectada: 11 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 64.92
+  Mínimo: 24.00
+  Máximo: 118.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.691
+  Mínimo: 0.635
+  Máximo: 0.737

@@ -1,0 +1,128 @@
+REPORTE DETALLADO DE DETECCIÓN DE SEÑALES
+CONFIGURACIÓN: CONFIG_BALANCED
+============================================================
+Fecha y hora: 2025-10-16 12:47:53
+Configuración utilizada: CONFIG_BALANCED
+Número de señales detectadas: 15
+Tiempo de ejecución: 14.456 segundos
+
+INFORMACIÓN DE LA IMAGEN:
+  Dimensiones: 536 x 450
+  Canales: 3
+  Píxeles totales: 241200
+
+DETALLES DE LA CONFIGURACIÓN:
+  Método: Equilibrada - Combinación equilibrada Hough + Contornos + Color
+  Confianza promedio: 0.692
+  Candidatos Hough: 48
+  Candidatos contornos: 0
+
+DETALLES DE SEÑALES DETECTADAS:
+  Señal 1:
+    Centro: (104, 360)
+    Radio: 80
+    Tipo: Informativa
+    Confianza: 0.731
+
+  Señal 2:
+    Centro: (440, 88)
+    Radio: 74
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 3:
+    Centro: (252, 140)
+    Radio: 48
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 4:
+    Centro: (426, 374)
+    Radio: 66
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 5:
+    Centro: (366, 106)
+    Radio: 51
+    Tipo: Detectada
+    Confianza: 0.720
+
+  Señal 6:
+    Centro: (84, 230)
+    Radio: 56
+    Tipo: Detectada
+    Confianza: 0.707
+
+  Señal 7:
+    Centro: (310, 130)
+    Radio: 86
+    Tipo: Detectada
+    Confianza: 0.705
+
+  Señal 8:
+    Centro: (480, 130)
+    Radio: 35
+    Tipo: Detectada
+    Confianza: 0.704
+
+  Señal 9:
+    Centro: (386, 176)
+    Radio: 58
+    Tipo: Detectada
+    Confianza: 0.692
+
+  Señal 10:
+    Centro: (324, 188)
+    Radio: 124
+    Tipo: Detectada
+    Confianza: 0.678
+
+  Señal 11:
+    Centro: (400, 324)
+    Radio: 102
+    Tipo: Detectada
+    Confianza: 0.673
+
+  Señal 12:
+    Centro: (430, 210)
+    Radio: 68
+    Tipo: Detectada
+    Confianza: 0.671
+
+  Señal 13:
+    Centro: (252, 390)
+    Radio: 55
+    Tipo: Detectada
+    Confianza: 0.669
+
+  Señal 14:
+    Centro: (108, 286)
+    Radio: 107
+    Tipo: Detectada
+    Confianza: 0.638
+
+  Señal 15:
+    Centro: (448, 276)
+    Radio: 83
+    Tipo: Detectada
+    Confianza: 0.635
+
+ESTADÍSTICAS BÁSICAS:
+  Radio promedio: 72.87
+  Radio mínimo: 35.00
+  Radio máximo: 124.00
+  Desviación estándar: 23.64
+
+ESTADÍSTICAS POR TIPO:
+  Informativa: 1 detecciones
+  Detectada: 14 detecciones
+
+ESTADÍSTICAS DE RADIOS:
+  Promedio: 72.87
+  Mínimo: 35.00
+  Máximo: 124.00
+ESTADÍSTICAS DE CONFIANZAS:
+  Promedio: 0.692
+  Mínimo: 0.635
+  Máximo: 0.731
