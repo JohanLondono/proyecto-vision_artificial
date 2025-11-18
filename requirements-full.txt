@@ -28,6 +28,7 @@ torchvision
 
 # TensorFlow
 tensorflow
+tensorflow-hub
 
 # YOLO y detección moderna
 ultralytics
@@ -35,6 +36,15 @@ ultralytics
 # Transformers y modelos preentrenados
 transformers
 sentence-transformers
+
+# ===============================================
+# DEPENDENCIAS OPCIONALES
+# ===============================================
+
+#detectron2 (para Mask R-CNN real - instalación compleja en Windows)
+# Requiere: Visual Studio C++ Build Tools
+# Linux/Mac: pip install 'git+https://github.com/facebookresearch/detectron2.git'
+# Windows: Usar WSL o alternativa DeepLabV3+ (incluida por defecto)
 
 # ===============================================
 # UTILIDADES ADICIONALES

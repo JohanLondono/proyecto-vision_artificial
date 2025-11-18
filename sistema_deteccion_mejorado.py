@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Sistema de Detección de Sombreros - Versión Mejorada
-====================================================
+Sistema de Detección de Sombreros - Versión Mejorada y Corregida
+===============================================================
 
 Sistema completo con:
 - Selección interactiva de modelos
-- Entrenamiento desde cero
-- Configuración avanzada
 - Detección en tiempo real mejorada
+- Configuración avanzada
+- Integración con detectores de video
 
-Autor: Sistema de Detección Vehicular
+Universidad del Quindío - Visión Artificial
 Fecha: Noviembre 2025
 """
 
@@ -20,6 +20,249 @@ import numpy as np
 import time
 from datetime import datetime
 import json
+from detectores.deteccion_video_modelos import DetectorVideoModelos
+
+class PreprocesadorInteractivo:
+    """Clase para manejar preprocesamiento interactivo de imágenes."""
+    
+    def __init__(self):
+        """Inicializa el preprocesador interactivo."""
+        self.tecnicas_disponibles = {
+            'ecualizacion_histograma': 'Ecualización del histograma (normalizar iluminación)',
+            'clahe': 'CLAHE - Ecualización adaptativa (mejorar contraste local)',
+            'mejorar_saturacion': 'Mejorar saturación de colores',
+            'filtro_bilateral': 'Filtro bilateral (reducir ruido preservando bordes)',
+            'filtro_gaussiano': 'Filtro Gaussiano (suavizado)',
+            'ajuste_brillo': 'Ajustar brillo',
+            'ajuste_contraste': 'Ajustar contraste global',
+            'gamma_correction': 'Corrección Gamma'
+        }
+    
+    def mostrar_opciones_preprocesamiento(self):
+        """Muestra las opciones de preprocesamiento disponibles."""
+        print("\nOPCIONES DE PREPROCESAMIENTO DISPONIBLES:")
+        print("=" * 50)
+        for i, (key, desc) in enumerate(self.tecnicas_disponibles.items(), 1):
+            print(f"{i}. {desc}")
+        print("0. Continuar sin preprocesamiento")
+        print("99. Aplicar todas las técnicas (automático)")
+    
+    def seleccionar_tecnicas(self):
+        """Permite al usuario seleccionar qué técnicas aplicar."""
+        self.mostrar_opciones_preprocesamiento()
+        
+        tecnicas_seleccionadas = []
+        keys_list = list(self.tecnicas_disponibles.keys())
+        
+        print("\nSeleccione las técnicas que desea aplicar (separadas por comas):")
+        print("Ejemplo: 1,3,4 para aplicar ecualización, saturación y filtro bilateral")
+        
+        try:
+            entrada = input("Opciones seleccionadas: ").strip()
+            
+            if entrada == '0':
+                return []
+            elif entrada == '99':
+                return keys_list
+            
+            indices = [int(x.strip()) for x in entrada.split(',') if x.strip()]
+            
+            for indice in indices:
+                if 1 <= indice <= len(keys_list):
+                    tecnica = keys_list[indice - 1]
+                    tecnicas_seleccionadas.append(tecnica)
+                    print(f"✓ Seleccionado: {self.tecnicas_disponibles[tecnica]}")
+                else:
+                    print(f"⚠️ Índice inválido ignorado: {indice}")
+            
+            if tecnicas_seleccionadas:
+                print(f"\nTotal de técnicas seleccionadas: {len(tecnicas_seleccionadas)}")
+            else:
+                print("\nNo se seleccionaron técnicas de preprocesamiento")
+                
+            return tecnicas_seleccionadas
+            
+        except ValueError:
+            print("Entrada inválida. No se aplicará preprocesamiento.")
+            return []
+    
+    def aplicar_ecualizacion_histograma(self, imagen):
+        """Aplica ecualización del histograma para normalizar iluminación."""
+        try:
+            if len(imagen.shape) == 3:
+                # Convertir a LAB y ecualizar el canal L
+                lab = cv2.cvtColor(imagen, cv2.COLOR_BGR2LAB)
+                lab[:,:,0] = cv2.equalizeHist(lab[:,:,0])
+                resultado = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+            else:
+                # Imagen en escala de grises
+                resultado = cv2.equalizeHist(imagen)
+            
+            print("✓ Ecualización del histograma aplicada")
+            return resultado
+        except Exception as e:
+            print(f"Error en ecualización del histograma: {e}")
+            return imagen
+    
+    def aplicar_clahe(self, imagen, clip_limit=3.0, tile_grid_size=(8,8)):
+        """Aplica CLAHE para mejorar contraste local."""
+        try:
+            if len(imagen.shape) == 3:
+                # Aplicar CLAHE al canal L en espacio LAB
+                lab = cv2.cvtColor(imagen, cv2.COLOR_BGR2LAB)
+                clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size)
+                lab[:,:,0] = clahe.apply(lab[:,:,0])
+                resultado = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+            else:
+                # Imagen en escala de grises
+                clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size)
+                resultado = clahe.apply(imagen)
+            
+            print("✓ CLAHE aplicado para mejorar contraste local")
+            return resultado
+        except Exception as e:
+            print(f"Error en CLAHE: {e}")
+            return imagen
+    
+    def mejorar_saturacion(self, imagen, factor=1.3):
+        """Mejora la saturación de colores."""
+        try:
+            if len(imagen.shape) == 3:
+                # Convertir a HSV y ajustar saturación
+                hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV).astype(np.float32)
+                hsv[:,:,1] = hsv[:,:,1] * factor
+                hsv[:,:,1] = np.clip(hsv[:,:,1], 0, 255)
+                resultado = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
+                
+                print(f"✓ Saturación mejorada (factor: {factor})")
+                return resultado
+            else:
+                print("⚠️ No se puede mejorar saturación en imagen en escala de grises")
+                return imagen
+        except Exception as e:
+            print(f"Error mejorando saturación: {e}")
+            return imagen
+    
+    def aplicar_filtro_bilateral(self, imagen, d=9, sigma_color=75, sigma_space=75):
+        """Aplica filtro bilateral para reducir ruido preservando bordes."""
+        try:
+            resultado = cv2.bilateralFilter(imagen, d, sigma_color, sigma_space)
+            print(f"✓ Filtro bilateral aplicado (d={d}, σ_color={sigma_color}, σ_space={sigma_space})")
+            return resultado
+        except Exception as e:
+            print(f"Error en filtro bilateral: {e}")
+            return imagen
+    
+    def aplicar_filtro_gaussiano(self, imagen, kernel_size=(5,5), sigma=0):
+        """Aplica filtro Gaussiano para suavizado."""
+        try:
+            resultado = cv2.GaussianBlur(imagen, kernel_size, sigma)
+            print(f"✓ Filtro Gaussiano aplicado (kernel: {kernel_size})")
+            return resultado
+        except Exception as e:
+            print(f"Error en filtro Gaussiano: {e}")
+            return imagen
+    
+    def ajustar_brillo(self, imagen, incremento=20):
+        """Ajusta el brillo de la imagen."""
+        try:
+            resultado = cv2.add(imagen, np.ones(imagen.shape, dtype=np.uint8) * incremento)
+            resultado = np.clip(resultado, 0, 255)
+            print(f"✓ Brillo ajustado (incremento: {incremento})")
+            return resultado
+        except Exception as e:
+            print(f"Error ajustando brillo: {e}")
+            return imagen
+    
+    def ajustar_contraste(self, imagen, factor=1.2):
+        """Ajusta el contraste global de la imagen."""
+        try:
+            resultado = cv2.multiply(imagen, factor)
+            resultado = np.clip(resultado, 0, 255).astype(np.uint8)
+            print(f"✓ Contraste ajustado (factor: {factor})")
+            return resultado
+        except Exception as e:
+            print(f"Error ajustando contraste: {e}")
+            return imagen
+    
+    def correccion_gamma(self, imagen, gamma=1.2):
+        """Aplica corrección gamma."""
+        try:
+            # Crear tabla de lookup para corrección gamma
+            inv_gamma = 1.0 / gamma
+            table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
+            resultado = cv2.LUT(imagen, table)
+            print(f"✓ Corrección gamma aplicada (γ={gamma})")
+            return resultado
+        except Exception as e:
+            print(f"Error en corrección gamma: {e}")
+            return imagen
+    
+    def aplicar_tecnicas_seleccionadas(self, imagen, tecnicas_seleccionadas, mostrar_progreso=True):
+        """Aplica las técnicas seleccionadas en secuencia."""
+        if not tecnicas_seleccionadas:
+            print("No hay técnicas de preprocesamiento seleccionadas")
+            return imagen
+        
+        imagen_procesada = imagen.copy()
+        print(f"\n🔄 Aplicando {len(tecnicas_seleccionadas)} técnicas de preprocesamiento...")
+        print("-" * 60)
+        
+        for i, tecnica in enumerate(tecnicas_seleccionadas, 1):
+            if mostrar_progreso:
+                print(f"[{i}/{len(tecnicas_seleccionadas)}] {self.tecnicas_disponibles.get(tecnica, tecnica)}...")
+            
+            if tecnica == 'ecualizacion_histograma':
+                imagen_procesada = self.aplicar_ecualizacion_histograma(imagen_procesada)
+            elif tecnica == 'clahe':
+                imagen_procesada = self.aplicar_clahe(imagen_procesada)
+            elif tecnica == 'mejorar_saturacion':
+                imagen_procesada = self.mejorar_saturacion(imagen_procesada)
+            elif tecnica == 'filtro_bilateral':
+                imagen_procesada = self.aplicar_filtro_bilateral(imagen_procesada)
+            elif tecnica == 'filtro_gaussiano':
+                imagen_procesada = self.aplicar_filtro_gaussiano(imagen_procesada)
+            elif tecnica == 'ajuste_brillo':
+                imagen_procesada = self.ajustar_brillo(imagen_procesada)
+            elif tecnica == 'ajuste_contraste':
+                imagen_procesada = self.ajustar_contraste(imagen_procesada)
+            elif tecnica == 'gamma_correction':
+                imagen_procesada = self.correccion_gamma(imagen_procesada)
+            else:
+                print(f"⚠️ Técnica no reconocida: {tecnica}")
+        
+        print("-" * 60)
+        print("✅ Preprocesamiento completado")
+        return imagen_procesada
+    
+    def mostrar_comparacion(self, imagen_original, imagen_procesada, tecnicas_aplicadas):
+        """Muestra comparación antes y después del preprocesamiento."""
+        try:
+            # Mostrar imágenes lado a lado
+            altura = max(imagen_original.shape[0], imagen_procesada.shape[0])
+            
+            # Redimensionar para comparación si es necesario
+            if imagen_original.shape[:2] != imagen_procesada.shape[:2]:
+                imagen_original_resized = cv2.resize(imagen_original, imagen_procesada.shape[1::-1])
+            else:
+                imagen_original_resized = imagen_original
+            
+            # Crear imagen combinada
+            combinada = np.hstack([imagen_original_resized, imagen_procesada])
+            
+            # Agregar texto informativo
+            cv2.putText(combinada, 'ORIGINAL', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(combinada, 'PROCESADA', (imagen_original_resized.shape[1] + 10, 30), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            
+            cv2.imshow('Comparación: Original vs Procesada - Presione cualquier tecla para cerrar', combinada)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            
+            print(f"\n📊 Técnicas aplicadas: {', '.join([self.tecnicas_disponibles.get(t, t) for t in tecnicas_aplicadas])}")
+            
+        except Exception as e:
+            print(f"Error mostrando comparación: {e}")
 
 # Configuración silenciosa
 try:
@@ -36,6 +279,8 @@ class SistemaDeteccionSombrerosMejorado:
     
     def __init__(self):
         """Inicializa el sistema mejorado."""
+        self.detector_video = DetectorVideoModelos()
+        self.preprocesador = PreprocesadorInteractivo()  # Agregar preprocesador interactivo
         self.modelo_activo = None
         self.configuracion = {
             'modelo_seleccionado': None,
@@ -63,111 +308,122 @@ class SistemaDeteccionSombrerosMejorado:
         print("=" * 40)
         
         try:
-            print("Inicializando modulos de deteccion...")
-            
-            # Simular inicialización de módulos (independiente del sistema anterior)
-            print("Configurando redes neuronales...")
-            print("Preparando modelos preentrenados...")
-            print("Configurando modelos de segmentacion...")
-            
-            # Catalogar modelos disponibles de forma independiente
+            # Catalogar modelos disponibles
             self.catalogar_modelos_disponibles_independiente()
-            
             print("Sistema inicializado correctamente")
+            return True
             
         except Exception as e:
-            print(f"Error inicializando sistema: {e}")
+            print(f"Error en inicialización: {e}")
             return False
-        
-        return True
     
     def catalogar_modelos_disponibles_independiente(self):
-        """Cataloga todos los modelos disponibles de forma independiente."""
-        print("\n📋 CATALOGANDO MODELOS DISPONIBLES")
+        """Cataloga todos los modelos disponibles utilizando el detector de video."""
+        print("\nCatalogando modelos disponibles")
         print("-" * 35)
         
-        # Modelos personalizados simulados (independientes)
-        modelos_custom = ['alexnet', 'vgg16', 'resnet50', 'cnn_simple']
-        for modelo in modelos_custom:
-            self.modelos_disponibles[f"custom_{modelo}"] = {
-                'tipo': 'custom',
-                'nombre': modelo,
-                'objeto': None,  # Se cargará dinámicamente
-                'entrenado': False,
-                'descripcion': f"Red neuronal personalizada {modelo.upper()}",
-                'uso': 'clasificacion',
-                'requiere_entrenamiento': True
-            }
-            print(f"   🧠 Custom: {modelo.upper()}")
+        # Obtener modelos del detector de video
+        modelos_video = self.detector_video.modelos_disponibles
         
-        # Modelos preentrenados simulados
-        modelos_preentrenados = ['yolo', 'faster_rcnn']
-        for modelo in modelos_preentrenados:
-            self.modelos_disponibles[f"pretrained_{modelo}"] = {
-                'tipo': 'pretrained',
-                'nombre': modelo,
-                'objeto': None,  # Se cargará dinámicamente
+        # Catalogar modelos de clasificación
+        for modelo_key, modelo_desc in modelos_video['clasificacion'].items():
+            self.modelos_disponibles[modelo_key] = {
+                'tipo': 'clasificacion',
+                'nombre': modelo_key,
+                'objeto': None,
+                'entrenado': False,
+                'descripcion': f'Modelo de clasificación {modelo_desc}',
+                'uso': 'clasificacion',
+                'requiere_entrenamiento': False
+            }
+            print(f"   Clasificación: {modelo_key.upper()} - {modelo_desc}")
+        
+        # Catalogar modelos de detección
+        for modelo_key, modelo_desc in modelos_video['deteccion'].items():
+            self.modelos_disponibles[modelo_key] = {
+                'tipo': 'deteccion',
+                'nombre': modelo_key,
+                'objeto': None,
                 'entrenado': True,
-                'descripcion': f"Modelo preentrenado {modelo.upper()}",
+                'descripcion': f'Modelo de detección {modelo_desc}',
                 'uso': 'deteccion',
                 'requiere_entrenamiento': False
             }
-            print(f"   🤖 Preentrenado: {modelo.upper()}")
+            print(f"   Detección: {modelo_key.upper()} - {modelo_desc}")
         
-        # Modelos de segmentación simulados
-        modelos_seg = ['unet', 'mask_rcnn']
-        for modelo in modelos_seg:
-            self.modelos_disponibles[f"segmentation_{modelo}"] = {
-                'tipo': 'segmentation',
-                'nombre': modelo,
-                'objeto': None,  # Se cargará dinámicamente
+        # Agregar YOLO Custom (modelo entrenado personalizado)
+        self.modelos_disponibles['yolo_custom'] = {
+            'tipo': 'deteccion',
+            'nombre': 'yolo_custom',
+            'objeto': None,
+            'entrenado': True,
+            'descripcion': 'YOLO Custom - Modelo entrenado para sombreros 🎩',
+            'uso': 'deteccion',
+            'requiere_entrenamiento': False
+        }
+        print(f"   Detección: YOLO_CUSTOM - Modelo personalizado de sombreros 🎩")
+        
+        # Catalogar modelos de segmentación
+        for modelo_key, modelo_desc in modelos_video['segmentacion'].items():
+            self.modelos_disponibles[modelo_key] = {
+                'tipo': 'segmentacion',
+                'nombre': modelo_key,
+                'objeto': None,
                 'entrenado': False,
-                'descripcion': f"Modelo de segmentación {modelo.upper()}",
+                'descripcion': f'Modelo de segmentación {modelo_desc}',
                 'uso': 'segmentacion',
-                'requiere_entrenamiento': True
+                'requiere_entrenamiento': False
             }
-            print(f"   🎭 Segmentación: {modelo.upper()}")
+            print(f"   Segmentación: {modelo_key.upper()} - {modelo_desc}")
         
-        print(f"📊 Total de modelos disponibles: {len(self.modelos_disponibles)}")
+        print(f"Total de modelos disponibles: {len(self.modelos_disponibles)}")
     
     def mostrar_menu_principal(self):
         """Muestra el menú principal mejorado."""
-        print(f"\n🎩 SISTEMA DE DETECCIÓN DE SOMBREROS - MEJORADO")
+        print(f"\nSISTEMA DE DETECCIÓN DE SOMBREROS - MEJORADO v2.0")
         print("=" * 55)
-        print("1. 🔍 Detección en Imagen Individual")
-        print("2. 📹 Detección en Video/Tiempo Real")
-        print("3. 🧠 Gestión de Modelos")
-        print("4. 📚 Entrenar Modelo desde Cero")
-        print("5. ⚙️  Configuración del Sistema")
-        print("6. 📊 Estadísticas y Reportes")
-        print("7. 🔧 Herramientas Avanzadas")
-        print("8. ❓ Ayuda y Documentación")
-        print("0. 🚪 Salir")
+        print("1. Detección en Imagen Individual 🔍 [NUEVO: Preprocesamiento]")
+        print("2. Detección en Video/Tiempo Real 📹")
+        print("3. Gestión de Modelos 🧠")
+        print("4. Comparativa de Modelos 📊 [NUEVO: Análisis Completo]")
+        print("5. Entrenar Modelo desde Cero 🎯")
+        print("6. Configuración del Sistema ⚙️")
+        print("7. Estadísticas y Reportes 📊")
+        print("8. Herramientas Avanzadas 🔧")
+        print("9. Ayuda y Documentación ❓")
+        print("0. Salir")
         print("=" * 55)
+        print("✨ NUEVO: Preprocesamiento interactivo disponible")
+        print("   • Ecualización de histograma • CLAHE • Mejora de saturación")
+        print("   • Filtro bilateral • Ajustes de brillo/contraste • Y más...")
+        print("🆕 NUEVO: Comparativa de modelos con estadísticas y gráficos")
+        print("-" * 55)
         
         if self.modelo_activo:
-            print(f"🎯 Modelo activo: {self.modelo_activo}")
+            print(f"📍 Modelo activo: {self.modelo_activo.upper()}")
         else:
-            print("⚠️  Ningún modelo seleccionado")
+            print("⚠️  No hay modelo activo - Seleccione un modelo en la opción 3")
     
     def seleccionar_modelo(self):
         """Permite al usuario seleccionar un modelo específico."""
-        print(f"\n🎯 SELECCIONAR MODELO PARA DETECCIÓN")
+        print(f"\nSELECCIONAR MODELO PARA DETECCIÓN")
         print("=" * 40)
         
         if not self.modelos_disponibles:
-            print("❌ No hay modelos disponibles")
+            print("No hay modelos disponibles")
             return None
         
-        # Agrupar modelos por tipo
+        # Mostrar modelos por tipo
         modelos_por_tipo = {
-            'custom': [],
-            'pretrained': [],
-            'segmentation': []
+            'clasificacion': [],
+            'deteccion': [],
+            'segmentacion': []
         }
         
         for key, modelo in self.modelos_disponibles.items():
-            modelos_por_tipo[modelo['tipo']].append((key, modelo))
+            tipo = modelo['tipo']
+            if tipo in modelos_por_tipo:
+                modelos_por_tipo[tipo].append((key, modelo))
         
         # Mostrar opciones
         opciones = []
@@ -175,48 +431,33 @@ class SistemaDeteccionSombrerosMejorado:
         
         for tipo, lista in modelos_por_tipo.items():
             if lista:
-                print(f"\n🔸 {tipo.upper()}:")
+                print(f"\n{tipo.upper()}:")
                 for key, modelo in lista:
-                    status = "✅ Listo" if modelo['entrenado'] else "⚠️  Necesita entrenamiento"
-                    print(f"   {indice}. {modelo['descripcion']} ({status})")
+                    print(f"  {indice}. {key.upper()} - {modelo['descripcion']}")
                     opciones.append(key)
                     indice += 1
         
-        print(f"\n0. 🔙 Volver al menú principal")
+        print(f"\n0. Volver al menú principal")
         
         try:
-            seleccion = int(input(f"\n🎯 Seleccione un modelo (0-{len(opciones)}): "))
-            
+            seleccion = int(input("Seleccione modelo: "))
             if seleccion == 0:
                 return None
             elif 1 <= seleccion <= len(opciones):
-                modelo_key = opciones[seleccion - 1]
-                modelo_info = self.modelos_disponibles[modelo_key]
-                
-                if not modelo_info['entrenado'] and modelo_info['requiere_entrenamiento']:
-                    print(f"\n⚠️  El modelo {modelo_info['nombre']} requiere entrenamiento")
-                    entrenar = input("¿Desea entrenarlo ahora? (s/n): ").lower() == 's'
-                    
-                    if entrenar:
-                        exito = self.entrenar_modelo(modelo_key)
-                        if not exito:
-                            print("❌ No se pudo entrenar el modelo")
-                            return None
-                
-                self.modelo_activo = modelo_key
-                print(f"✅ Modelo seleccionado: {modelo_info['descripcion']}")
-                return modelo_key
+                modelo_seleccionado = opciones[seleccion - 1]
+                self.modelo_activo = modelo_seleccionado
+                print(f"Modelo {modelo_seleccionado} seleccionado")
+                return modelo_seleccionado
             else:
-                print("❌ Selección inválida")
+                print("Selección inválida")
                 return None
-                
         except ValueError:
-            print("❌ Entrada inválida")
+            print("Entrada inválida")
             return None
     
     def configurar_parametros_deteccion(self):
         """Configura parámetros específicos para la detección."""
-        print(f"\n⚙️  CONFIGURACIÓN DE PARÁMETROS")
+        print(f"\nCONFIGURACIÓN DE PARÁMETROS")
         print("=" * 35)
         
         print(f"Configuración actual:")
@@ -225,10 +466,10 @@ class SistemaDeteccionSombrerosMejorado:
         print(f"  - Escala de detección: {self.configuracion['procesamiento_tiempo_real']['escala_deteccion']}")
         
         print(f"\n¿Qué desea configurar?")
-        print("1. 🎯 Umbral de confianza")
-        print("2. ⚡ Parámetros de tiempo real")
-        print("3. 🧠 Parámetros de entrenamiento")
-        print("0. 🔙 Volver")
+        print("1. Umbral de confianza")
+        print("2. Parámetros de tiempo real")
+        print("3. Parámetros de entrenamiento")
+        print("0. Volver")
         
         try:
             opcion = int(input("\nSeleccione opción: "))
@@ -237,22 +478,22 @@ class SistemaDeteccionSombrerosMejorado:
                 nuevo_umbral = float(input(f"Nuevo umbral de confianza (0.0-1.0): "))
                 if 0.0 <= nuevo_umbral <= 1.0:
                     self.configuracion['umbral_confianza'] = nuevo_umbral
-                    print(f"✅ Umbral actualizado a {nuevo_umbral}")
+                    print(f"Umbral actualizado a {nuevo_umbral}")
                 else:
-                    print("❌ Valor inválido")
+                    print("Valor inválido")
             
             elif opcion == 2:
                 print("Configuración de tiempo real:")
                 fps = int(input("FPS objetivo (10-60): "))
                 if 10 <= fps <= 60:
                     self.configuracion['procesamiento_tiempo_real']['fps_objetivo'] = fps
+                    print("FPS actualizado")
                 
                 escala = float(input("Escala de detección (0.1-2.0): "))
                 if 0.1 <= escala <= 2.0:
                     self.configuracion['procesamiento_tiempo_real']['escala_deteccion'] = escala
+                    print("Escala actualizada")
                 
-                print("✅ Configuración actualizada")
-            
             elif opcion == 3:
                 print("Configuración de entrenamiento:")
                 epochs = int(input(f"Épocas ({self.configuracion['entrenamiento']['epochs']}): ") or self.configuracion['entrenamiento']['epochs'])
@@ -260,836 +501,152 @@ class SistemaDeteccionSombrerosMejorado:
                 
                 self.configuracion['entrenamiento']['epochs'] = epochs
                 self.configuracion['entrenamiento']['batch_size'] = batch_size
-                print("✅ Configuración de entrenamiento actualizada")
+                print("Configuración de entrenamiento actualizada")
                 
         except ValueError:
-            print("❌ Entrada inválida")
+            print("Entrada inválida")
     
     def detectar_video_tiempo_real_mejorado(self):
-        """Detección en video con selección de modelo."""
-        print(f"\n📹 DETECCIÓN EN VIDEO/TIEMPO REAL")
+        """Detección en video con selección de modelo usando el sistema integrado."""
+        print(f"\nDETECCIÓN EN VIDEO/TIEMPO REAL")
         print("=" * 40)
         
+        # Verificar si hay modelo activo
         if not self.modelo_activo:
-            print("❌ Debe seleccionar un modelo primero")
-            modelo = self.seleccionar_modelo()
-            if not modelo:
+            print("Debe seleccionar un modelo primero")
+            self._seleccionar_modelo_para_video()
+            if not self.modelo_activo:
                 return
+        
+        # Cargar el modelo en el detector de video
+        if not self.detector_video.cargar_modelo(self.modelo_activo):
+            print(f"Error cargando modelo {self.modelo_activo}")
+            return
         
         # Configurar parámetros si es necesario
         print(f"\n¿Desea configurar parámetros de detección? (s/n): ", end="")
         if input().lower() == 's':
-            self.configurar_parametros_deteccion()
+            self._configurar_parametros_video()
         
         # Seleccionar fuente
         print(f"\nSeleccione fuente de video:")
-        print("1. 📷 Cámara web")
-        print("2. 📁 Archivo de video")
-        print("0. 🔙 Volver")
+        print("1. Cámara web")
+        print("2. Archivo de video")
+        print("0. Volver")
         
         try:
             opcion = int(input("Seleccione opción: "))
             
             if opcion == 1:
-                self._procesar_camara_web()
+                print("Iniciando detección desde cámara web...")
+                self.detector_video.procesar_video_tiempo_real(0)
+                
             elif opcion == 2:
-                video_path = input("Ruta al archivo de video: ").strip()
-                if os.path.exists(video_path):
-                    self._procesar_archivo_video(video_path)
-                else:
-                    print("❌ Archivo no encontrado")
-            
-        except ValueError:
-            print("❌ Entrada inválida")
-    
-    def _procesar_camara_web(self):
-        """Procesa video desde cámara web."""
-        print("📷 Iniciando cámara web...")
-        
-        cap = cv2.VideoCapture(0)
-        if not cap.isOpened():
-            print("❌ No se pudo abrir la cámara")
-            return
-        
-        modelo_info = self.modelos_disponibles[self.modelo_activo]
-        
-        print(f"🎬 Presiona 'q' para salir, 'p' para pausar, 's' para capturar")
-        print(f"🎯 Usando modelo: {modelo_info['descripcion']}")
-        
-        frame_count = 0
-        detecciones_totales = 0
-        
-        try:
-            while True:
-                ret, frame = cap.read()
-                if not ret:
-                    break
-                
-                inicio_frame = time.time()
-                
-                # Aplicar escala si es necesario
-                escala = self.configuracion['procesamiento_tiempo_real']['escala_deteccion']
-                if escala != 1.0:
-                    height, width = frame.shape[:2]
-                    new_width = int(width * escala)
-                    new_height = int(height * escala)
-                    frame_proc = cv2.resize(frame, (new_width, new_height))
-                else:
-                    frame_proc = frame.copy()
-                
-                # Realizar detección según tipo de modelo
-                detecciones_frame = 0
-                
-                if modelo_info['tipo'] == 'pretrained':
-                    detecciones_frame = self._detectar_frame_preentrenado(frame_proc, modelo_info)
-                elif modelo_info['tipo'] == 'custom':
-                    detecciones_frame = self._detectar_frame_custom(frame_proc, modelo_info)
-                elif modelo_info['tipo'] == 'segmentation':
-                    detecciones_frame = self._detectar_frame_segmentacion(frame_proc, modelo_info)
-                
-                # Dibujar información
-                self._dibujar_info_frame(frame, frame_count, detecciones_frame, modelo_info, time.time() - inicio_frame)
-                
-                # Mostrar frame
-                cv2.imshow('Detección de Sombreros - Sistema Mejorado', frame)
-                
-                # Estadísticas
-                frame_count += 1
-                detecciones_totales += detecciones_frame
-                
-                # Controles
-                key = cv2.waitKey(1) & 0xFF
-                if key == ord('q'):
-                    break
-                elif key == ord('p'):
-                    print("⏸️  Pausado - presiona cualquier tecla para continuar")
-                    cv2.waitKey(0)
-                elif key == ord('s'):
-                    # Capturar frame
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    filename = f"captura_{timestamp}.jpg"
-                    cv2.imwrite(filename, frame)
-                    print(f"📸 Captura guardada: {filename}")
-        
-        finally:
-            cap.release()
-            cv2.destroyAllWindows()
-            
-            # Mostrar estadísticas finales
-            print(f"\n📊 Estadísticas de la sesión:")
-            print(f"   Frames procesados: {frame_count}")
-            print(f"   Detecciones totales: {detecciones_totales}")
-            print(f"   Promedio por frame: {detecciones_totales/frame_count:.2f}" if frame_count > 0 else "")
-    
-    def _procesar_archivo_video(self, video_path):
-        """Procesa un archivo de video."""
-        print(f"📁 Procesando archivo: {os.path.basename(video_path)}")
-        
-        cap = cv2.VideoCapture(video_path)
-        if not cap.isOpened():
-            print("❌ No se pudo abrir el video")
-            return
-        
-        # Obtener propiedades del video
-        fps = int(cap.get(cv2.CAP_PROP_FPS)) or 30
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        
-        print(f"📺 Propiedades: {width}x{height}, {fps} FPS, {total_frames} frames")
-        
-        # Preguntar si guardar video procesado
-        guardar = input("¿Desea guardar el video procesado? (s/n): ").lower() == 's'
-        writer = None
-        
-        if guardar:
-            output_path = f"video_procesado_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-            writer = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
-            print(f"💾 Guardando en: {output_path}")
-        
-        # Procesar video con barra de progreso simple
-        frame_count = 0
-        modelo_info = self.modelos_disponibles[self.modelo_activo]
-        
-        try:
-            while True:
-                ret, frame = cap.read()
-                if not ret:
-                    break
-                
-                # Mostrar progreso
-                if frame_count % 30 == 0:  # Cada segundo aprox
-                    progreso = (frame_count / total_frames) * 100
-                    print(f"🔄 Progreso: {progreso:.1f}% ({frame_count}/{total_frames})")
-                
-                # Procesar frame (similar a cámara web pero más rápido)
-                detecciones_frame = 0
-                if modelo_info['tipo'] == 'pretrained':
-                    detecciones_frame = self._detectar_frame_preentrenado(frame, modelo_info)
-                
-                # Dibujar información básica
-                self._dibujar_info_frame(frame, frame_count, detecciones_frame, modelo_info, 0)
-                
-                # Guardar si es necesario
-                if writer:
-                    writer.write(frame)
-                
-                frame_count += 1
-                
-                # Control opcional para vista previa
-                if frame_count % 60 == 0:  # Mostrar cada 2 segundos aprox
-                    cv2.imshow('Vista previa - presiona q para cancelar', frame)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        break
-        
-        finally:
-            cap.release()
-            if writer:
-                writer.release()
-            cv2.destroyAllWindows()
-            print(f"✅ Video procesado completamente: {frame_count} frames")
-    
-    def _detectar_frame_preentrenado(self, frame, modelo_info):
-        """Detecta usando modelos preentrenados con visualización específica por modelo."""
-        import random
-        
-        height, width = frame.shape[:2]
-        detecciones = []
-        modelo_nombre = modelo_info.get('nombre', '').lower()
-        
-        # Comportamiento específico según el modelo preentrenado
-        if 'yolo' in modelo_nombre:
-            # YOLO: Detección rápida, múltiples objetos, confianza variable
-            num_detecciones = random.randint(0, 4)  # YOLO puede detectar varios objetos
-            color_base = (0, 255, 0)  # Verde para YOLO
-            
-        elif 'faster_rcnn' in modelo_nombre:
-            # Faster R-CNN: Más preciso pero más lento, menos detecciones
-            num_detecciones = random.randint(0, 2)  # Más conservador
-            color_base = (255, 0, 0)  # Azul para Faster R-CNN
-            
-        else:
-            # Modelo genérico
-            num_detecciones = random.randint(0, 2)
-            color_base = (0, 165, 255)  # Naranja para otros
-        
-        for i in range(num_detecciones):
-            # Generar coordenadas específicas según el modelo
-            if 'yolo' in modelo_nombre:
-                # YOLO: detecciones más variadas en tamaño
-                x = random.randint(30, width - 180)
-                y = random.randint(30, height - 180)
-                w = random.randint(70, 150)
-                h = random.randint(60, 130)
-                confianza_base = random.uniform(0.5, 0.95)
-                
-            elif 'faster_rcnn' in modelo_nombre:
-                # Faster R-CNN: detecciones más precisas y consistentes
-                x = random.randint(50, width - 200)
-                y = random.randint(50, height - 200)
-                w = random.randint(100, 180)
-                h = random.randint(80, 150)
-                confianza_base = random.uniform(0.7, 0.98)  # Más confiable
-                
-            else:
-                # Modelo genérico
-                x = random.randint(40, width - 160)
-                y = random.randint(40, height - 160)
-                w = random.randint(80, 140)
-                h = random.randint(70, 120)
-                confianza_base = random.uniform(0.6, 0.90)
-            
-            # Asegurar que no se salga del frame
-            x2 = min(x + w, width)
-            y2 = min(y + h, height)
-            
-            deteccion = {
-                'bbox': (x, y, x2, y2),
-                'confianza': confianza_base,
-                'clase': 'sombrero',
-                'modelo': modelo_info['nombre']
-            }
-            detecciones.append(deteccion)
-            
-            # Color específico por modelo y confianza
-            if confianza_base > 0.8:
-                color = color_base  # Color base del modelo
-            elif confianza_base > 0.6:
-                color = (0, 255, 255)  # Amarillo para confianza media
-            else:
-                color = (0, 165, 255)  # Naranja para confianza baja
-            
-            # Dibujar rectángulo con estilo específico del modelo
-            if 'yolo' in modelo_nombre:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 2)
-                # Esquinas marcadas para YOLO
-                corner_size = 15
-                cv2.line(frame, (x, y), (x + corner_size, y), color, 4)
-                cv2.line(frame, (x, y), (x, y + corner_size), color, 4)
-                cv2.line(frame, (x2, y2), (x2 - corner_size, y2), color, 4)
-                cv2.line(frame, (x2, y2), (x2, y2 - corner_size), color, 4)
-                
-            elif 'faster_rcnn' in modelo_nombre:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 3)
-                # Líneas de precisión para Faster R-CNN
-                cv2.line(frame, (x + w//2, y), (x + w//2, y + 10), color, 2)
-                cv2.line(frame, (x, y + h//2), (x + 10, y + h//2), color, 2)
-                
-            else:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 2)
-            
-            # Etiqueta con información del modelo
-            if 'yolo' in modelo_nombre:
-                etiqueta = f"YOLO-Sombrero {confianza_base:.3f}"
-            elif 'faster_rcnn' in modelo_nombre:
-                etiqueta = f"FRCNN-Sombrero {confianza_base:.3f}"
-            else:
-                etiqueta = f"Sombrero {confianza_base:.2f}"
-            
-            (tw, th), _ = cv2.getTextSize(etiqueta, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-            
-            # Fondo para la etiqueta
-            cv2.rectangle(frame, (x, y-th-12), (x+tw+12, y), color, -1)
-            cv2.putText(frame, etiqueta, (x+6, y-6), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            
-            # Punto central específico del modelo
-            centro_x = (x + x2) // 2
-            centro_y = (y + y2) // 2
-            if 'yolo' in modelo_nombre:
-                cv2.circle(frame, (centro_x, centro_y), 5, (255, 255, 0), -1)  # Cyan para YOLO
-            elif 'faster_rcnn' in modelo_nombre:
-                cv2.circle(frame, (centro_x, centro_y), 4, (255, 0, 255), -1)  # Magenta para FRCNN
-            else:
-                cv2.circle(frame, (centro_x, centro_y), 3, (255, 0, 0), -1)
-            
-            # ID de detección
-            cv2.putText(frame, f"#{i+1}", (x2-30, y+25), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        
-        return len(detecciones)
-        
-        return len(detecciones)
-    
-    def _detectar_frame_custom(self, frame, modelo_info):
-        """Detecta usando redes personalizadas específicas con visualización."""
-        import random
-        
-        height, width = frame.shape[:2]
-        detecciones = []
-        modelo_nombre = modelo_info.get('nombre', '').lower()
-        
-        # Comportamiento específico según el modelo custom
-        if 'alexnet' in modelo_nombre:
-            # AlexNet: Clasificación más simple, detecciones grandes
-            num_detecciones = random.randint(0, 2)
-            color_base = (255, 0, 0)  # Azul para AlexNet
-            confianza_min, confianza_max = 0.4, 0.8
-            
-        elif 'vgg16' in modelo_nombre:
-            # VGG16: Más detallado, detecciones medianas
-            num_detecciones = random.randint(0, 3)
-            color_base = (255, 100, 0)  # Azul claro para VGG16
-            confianza_min, confianza_max = 0.5, 0.85
-            
-        elif 'resnet50' in modelo_nombre:
-            # ResNet50: Más moderno, detecciones precisas
-            num_detecciones = random.randint(0, 3)
-            color_base = (200, 0, 100)  # Púrpura para ResNet50
-            confianza_min, confianza_max = 0.6, 0.9
-            
-        elif 'cnn_simple' in modelo_nombre:
-            # CNN Simple: Básico, pocas detecciones
-            num_detecciones = random.randint(0, 1)
-            color_base = (150, 50, 200)  # Morado para CNN Simple
-            confianza_min, confianza_max = 0.3, 0.7
-            
-        else:
-            # Modelo custom genérico
-            num_detecciones = random.randint(0, 2)
-            color_base = (128, 0, 128)  # Morado genérico
-            confianza_min, confianza_max = 0.5, 0.8
-        
-        for i in range(num_detecciones):
-            # Coordenadas específicas según el modelo
-            if 'alexnet' in modelo_nombre:
-                # AlexNet: detecciones más grandes y menos precisas
-                x = random.randint(60, width - 160)
-                y = random.randint(60, height - 160)
-                w = random.randint(80, 140)
-                h = random.randint(70, 120)
-                
-            elif 'vgg16' in modelo_nombre:
-                # VGG16: detecciones medianas
-                x = random.randint(70, width - 130)
-                y = random.randint(70, height - 130)
-                w = random.randint(60, 100)
-                h = random.randint(50, 90)
-                
-            elif 'resnet50' in modelo_nombre:
-                # ResNet50: detecciones más precisas
-                x = random.randint(80, width - 120)
-                y = random.randint(80, height - 120)
-                w = random.randint(50, 80)
-                h = random.randint(45, 75)
-                
-            elif 'cnn_simple' in modelo_nombre:
-                # CNN Simple: detecciones básicas
-                x = random.randint(90, width - 150)
-                y = random.randint(90, height - 150)
-                w = random.randint(70, 110)
-                h = random.randint(60, 100)
-                
-            else:
-                x = random.randint(80, width - 120)
-                y = random.randint(80, height - 120)
-                w = random.randint(60, 90)
-                h = random.randint(50, 80)
-            
-            x2 = min(x + w, width)
-            y2 = min(y + h, height)
-            
-            confianza = random.uniform(confianza_min, confianza_max)
-            
-            deteccion = {
-                'bbox': (x, y, x2, y2),
-                'confianza': confianza,
-                'clase': 'sombrero',
-                'modelo': modelo_info['nombre']
-            }
-            detecciones.append(deteccion)
-            
-            # Color según confianza y modelo
-            if confianza > 0.7:
-                color = color_base
-            elif confianza > 0.5:
-                color = (0, 200, 200)  # Cyan para confianza media
-            else:
-                color = (0, 100, 255)  # Naranja para confianza baja
-            
-            # Estilo de dibujo específico por modelo
-            if 'alexnet' in modelo_nombre:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 3)
-                # Marcadores en las esquinas para AlexNet
-                cv2.circle(frame, (x, y), 8, color, -1)
-                cv2.circle(frame, (x2, y2), 8, color, -1)
-                
-            elif 'vgg16' in modelo_nombre:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 2)
-                # Líneas cruzadas para VGG16
-                cv2.line(frame, (x, y), (x2, y2), color, 1)
-                cv2.line(frame, (x2, y), (x, y2), color, 1)
-                
-            elif 'resnet50' in modelo_nombre:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 2)
-                # Patrón de líneas para ResNet50
-                for j in range(3):
-                    offset = 5 + j * 5
-                    cv2.line(frame, (x + offset, y), (x + offset, y + 15), color, 1)
+                # Llamar al método del detector que maneja la selección de video
+                self.detector_video._procesar_archivo_video()
                     
-            elif 'cnn_simple' in modelo_nombre:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 4)
-                # Rectángulo simple y grueso
+            elif opcion == 0:
+                return
                 
-            else:
-                cv2.rectangle(frame, (x, y), (x2, y2), color, 2)
-            
-            # Etiqueta específica del modelo
-            if 'alexnet' in modelo_nombre:
-                etiqueta = f"ALEXNET {confianza:.3f}"
-            elif 'vgg16' in modelo_nombre:
-                etiqueta = f"VGG16 {confianza:.3f}"
-            elif 'resnet50' in modelo_nombre:
-                etiqueta = f"RESNET50 {confianza:.3f}"
-            elif 'cnn_simple' in modelo_nombre:
-                etiqueta = f"CNN-SIMPLE {confianza:.3f}"
-            else:
-                etiqueta = f"CUSTOM {confianza:.2f}"
-            
-            (tw, th), _ = cv2.getTextSize(etiqueta, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-            
-            # Fondo para etiqueta
-            cv2.rectangle(frame, (x, y-th-10), (x+tw+10, y), color, -1)
-            cv2.putText(frame, etiqueta, (x+5, y-5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-            
-            # Indicador específico del modelo
-            centro_x = (x + x2) // 2
-            centro_y = (y + y2) // 2
-            
-            if 'alexnet' in modelo_nombre:
-                cv2.circle(frame, (centro_x, centro_y), 6, (0, 255, 255), -1)  # Amarillo
-                cv2.putText(frame, "A", (centro_x-4, centro_y+4), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
-            elif 'vgg16' in modelo_nombre:
-                cv2.circle(frame, (centro_x, centro_y), 6, (255, 255, 0), -1)  # Cyan
-                cv2.putText(frame, "V", (centro_x-4, centro_y+4), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
-            elif 'resnet50' in modelo_nombre:
-                cv2.circle(frame, (centro_x, centro_y), 6, (255, 0, 255), -1)  # Magenta
-                cv2.putText(frame, "R", (centro_x-4, centro_y+4), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-            elif 'cnn_simple' in modelo_nombre:
-                cv2.circle(frame, (centro_x, centro_y), 8, (0, 255, 0), -1)  # Verde
-                cv2.putText(frame, "S", (centro_x-4, centro_y+4), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
-            else:
-                cv2.circle(frame, (centro_x, centro_y), 5, (0, 255, 255), -1)
-            
-            # ID de detección
-            cv2.putText(frame, f"#{i+1}", (x2-25, y+20), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-        
-        return len(detecciones)
-    
-    def _detectar_frame_segmentacion(self, frame, modelo_info):
-        """Detecta y segmenta usando redes de segmentación con visualización."""
-        import random
-        
-        height, width = frame.shape[:2]
-        detecciones = []
-        num_detecciones = random.randint(0, 2)
-        
-        for _ in range(num_detecciones):
-            # Para segmentación, usar áreas más precisas
-            x = random.randint(70, width - 110)
-            y = random.randint(70, height - 110)
-            w = random.randint(70, 100)
-            h = random.randint(60, 90)
-            
-            x2 = min(x + w, width)
-            y2 = min(y + h, height)
-            
-            confianza = random.uniform(0.6, 0.95)
-            
-            deteccion = {
-                'bbox': (x, y, x2, y2),
-                'confianza': confianza,
-                'clase': 'sombrero',
-                'modelo': modelo_info['nombre'],
-                'segmentado': True
-            }
-            detecciones.append(deteccion)
-            
-            # Color específico para segmentación (morado/magenta)
-            color = (255, 0, 255) if confianza > 0.8 else (150, 0, 200)
-            
-            # Crear máscara de segmentación simulada
-            overlay = frame.copy()
-            cv2.rectangle(overlay, (x, y), (x2, y2), color, -1)
-            frame = cv2.addWeighted(frame, 0.8, overlay, 0.2, 0)
-            
-            # Contorno de segmentación
-            cv2.rectangle(frame, (x, y), (x2, y2), color, 3)
-            
-            # Etiqueta específica para segmentación
-            etiqueta = f"SEGM-{modelo_info['nombre'].upper()} {confianza:.3f}"
-            (tw, th), _ = cv2.getTextSize(etiqueta, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-            
-            cv2.rectangle(frame, (x, y-th-10), (x+tw+10, y), color, -1)
-            cv2.putText(frame, etiqueta, (x+5, y-5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            
-            # Agregar puntos de contorno para mostrar segmentación
-            for i in range(5):
-                px = x + (i * w) // 4
-                py = y + random.randint(-5, 5)
-                cv2.circle(frame, (px, py), 3, (0, 255, 0), -1)
-        
-        return len(detecciones)
-    
-    def _dibujar_info_frame(self, frame, frame_num, detecciones, modelo_info, tiempo_proc):
-        """Dibuja información en el frame."""
-        # Información principal
-        cv2.putText(frame, f"Sombreros: {detecciones}", (10, 30), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-        
-        cv2.putText(frame, f"Frame: {frame_num}", (10, 60), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
-        
-        cv2.putText(frame, f"Modelo: {modelo_info['nombre']}", (10, 90), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
-        
-        if tiempo_proc > 0:
-            fps_actual = 1.0 / tiempo_proc
-            cv2.putText(frame, f"FPS: {fps_actual:.1f}", (10, 120), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
-        
-        # Umbral de confianza
-        cv2.putText(frame, f"Umbral: {self.configuracion['umbral_confianza']:.2f}", 
-                   (frame.shape[1] - 150, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
-    
-    def entrenar_modelo(self, modelo_key):
-        """Entrena un modelo desde cero."""
-        print(f"\n🧠 ENTRENAMIENTO DE MODELO")
-        print("=" * 30)
-        
-        modelo_info = self.modelos_disponibles[modelo_key]
-        print(f"🎯 Modelo a entrenar: {modelo_info['descripcion']}")
-        
-        # Verificar datos de entrenamiento
-        if not self._verificar_datos_entrenamiento():
-            if not self._configurar_datos_entrenamiento():
-                return False
-        
-        print(f"⚙️  Configuración de entrenamiento:")
-        print(f"   Épocas: {self.configuracion['entrenamiento']['epochs']}")
-        print(f"   Batch size: {self.configuracion['entrenamiento']['batch_size']}")
-        print(f"   Learning rate: {self.configuracion['entrenamiento']['learning_rate']}")
-        
-        confirmar = input("\n¿Continuar con el entrenamiento? (s/n): ").lower() == 's'
-        if not confirmar:
-            return False
-        
-        try:
-            print("🚀 Iniciando entrenamiento...")
-            
-            # Simular entrenamiento (implementación real dependería del tipo de modelo)
-            exito = self._ejecutar_entrenamiento(modelo_key)
-            
-            if exito:
-                # Marcar modelo como entrenado
-                self.modelos_disponibles[modelo_key]['entrenado'] = True
-                print(f"✅ Modelo entrenado exitosamente")
-                return True
-            else:
-                print(f"❌ Error durante el entrenamiento")
-                return False
-                
+        except ValueError:
+            print("Entrada inválida")
+        except KeyboardInterrupt:
+            print("\nDetección interrumpida por el usuario")
         except Exception as e:
-            print(f"❌ Error: {e}")
-            return False
+            print(f"Error en detección de video: {e}")
     
-    def _verificar_datos_entrenamiento(self):
-        """Verifica si hay datos de entrenamiento disponibles."""
-        # Buscar estructura de datos típica
-        data_dirs = [
-            "datos_sombreros",
-            "hat_dataset", 
-            "training_data"
-        ]
-        
-        for data_dir in data_dirs:
-            if os.path.exists(data_dir):
-                subdirs = ['train', 'validation', 'test']
-                if all(os.path.exists(os.path.join(data_dir, subdir)) for subdir in subdirs):
-                    print(f"✅ Datos encontrados en: {data_dir}")
-                    return True
-        
-        print("⚠️  No se encontraron datos de entrenamiento")
-        return False
-    
-    def _configurar_datos_entrenamiento(self):
-        """Configura o crea estructura de datos de entrenamiento."""
-        print(f"\n📁 CONFIGURACIÓN DE DATOS DE ENTRENAMIENTO")
+    def _seleccionar_modelo_para_video(self):
+        """Permite seleccionar un modelo específicamente para video."""
+        print("\nMODELOS DISPONIBLES PARA DETECCIÓN DE VIDEO:")
         print("-" * 45)
         
-        print("¿Qué desea hacer?")
-        print("1. 🔍 Especificar directorio existente")
-        print("2. 📁 Crear estructura de directorios")
-        print("3. 📥 Descargar dataset de ejemplo")
-        print("0. 🔙 Cancelar")
+        modelos_listados = []
+        contador = 1
+        
+        for key, info in self.modelos_disponibles.items():
+            print(f"{contador}. {key.upper()} - {info['descripcion']}")
+            modelos_listados.append(key)
+            contador += 1
+        
+        if not modelos_listados:
+            print("No hay modelos disponibles")
+            return
         
         try:
-            opcion = int(input("Seleccione opción: "))
-            
-            if opcion == 1:
-                data_dir = input("Ruta al directorio de datos: ").strip()
-                if os.path.exists(data_dir):
-                    print(f"✅ Directorio configurado: {data_dir}")
-                    return True
-                else:
-                    print("❌ Directorio no encontrado")
-                    return False
-            
-            elif opcion == 2:
-                return self._crear_estructura_datos()
-            
-            elif opcion == 3:
-                return self._descargar_dataset_ejemplo()
-            
+            seleccion = int(input(f"\nSeleccione modelo (1-{len(modelos_listados)}): "))
+            if 1 <= seleccion <= len(modelos_listados):
+                modelo_seleccionado = modelos_listados[seleccion - 1]
+                self.modelo_activo = modelo_seleccionado
+                print(f"Modelo {modelo_seleccionado} seleccionado")
             else:
-                return False
-                
+                print("Selección inválida")
         except ValueError:
-            print("❌ Entrada inválida")
-            return False
+            print("Entrada inválida")
     
-    def _crear_estructura_datos(self):
-        """Crea estructura de directorios para entrenamiento."""
-        print("📁 Creando estructura de directorios...")
-        
-        base_dir = "datos_sombreros"
-        subdirs = [
-            "train/con_sombrero",
-            "train/sin_sombrero", 
-            "validation/con_sombrero",
-            "validation/sin_sombrero",
-            "test/con_sombrero",
-            "test/sin_sombrero"
-        ]
-        
+    def _configurar_parametros_video(self):
+        """Configura parámetros específicos para detección de video."""
         try:
-            for subdir in subdirs:
-                full_path = os.path.join(base_dir, subdir)
-                os.makedirs(full_path, exist_ok=True)
+            print("\nCONFIGURACIÓN DE PARÁMETROS DE VIDEO:")
+            print("-" * 40)
             
-            # Crear README con instrucciones
-            readme_content = """
-# Dataset de Entrenamiento para Detección de Sombreros
-
-## Estructura
-- train/: Imágenes de entrenamiento (70%)
-- validation/: Imágenes de validación (20%) 
-- test/: Imágenes de prueba (10%)
-
-## Categorías
-- con_sombrero/: Imágenes de personas usando sombrero
-- sin_sombrero/: Imágenes de personas sin sombrero
-
-## Instrucciones
-1. Coloque al menos 100 imágenes en cada categoría de train/
-2. Coloque al menos 30 imágenes en cada categoría de validation/
-3. Coloque al menos 15 imágenes en cada categoría de test/
-
-## Formatos soportados
-- JPG, PNG, BMP
-- Tamaño recomendado: 224x224 o mayor
-"""
+            # Umbral de confianza
+            umbral_actual = self.detector_video.configuracion['umbral_confianza']
+            print(f"Umbral de confianza actual: {umbral_actual}")
+            nuevo_umbral = input(f"Nuevo umbral (0.1-0.9) [Enter para mantener]: ").strip()
             
-            with open(os.path.join(base_dir, "README.md"), "w", encoding="utf-8") as f:
-                f.write(readme_content)
+            if nuevo_umbral:
+                umbral_float = float(nuevo_umbral)
+                if 0.1 <= umbral_float <= 0.9:
+                    self.detector_video.configuracion['umbral_confianza'] = umbral_float
+                    self.configuracion['umbral_confianza'] = umbral_float
+                    print(f"Umbral actualizado a {umbral_float}")
+                else:
+                    print("Umbral fuera de rango, manteniendo valor actual")
             
-            print(f"✅ Estructura creada en: {base_dir}")
-            print("📝 Revise README.md para instrucciones detalladas")
-            return True
+            # FPS objetivo
+            fps_actual = self.detector_video.configuracion['fps_objetivo']
+            print(f"FPS objetivo actual: {fps_actual}")
+            nuevo_fps = input(f"Nuevo FPS (10-60) [Enter para mantener]: ").strip()
             
+            if nuevo_fps:
+                fps_int = int(nuevo_fps)
+                if 10 <= fps_int <= 60:
+                    self.detector_video.configuracion['fps_objetivo'] = fps_int
+                    self.configuracion['procesamiento_tiempo_real']['fps_objetivo'] = fps_int
+                    print(f"FPS actualizado a {fps_int}")
+                else:
+                    print("FPS fuera de rango, manteniendo valor actual")
+            
+            print("Configuración actualizada")
+            
+        except ValueError:
+            print("Valor inválido, manteniendo configuración actual")
         except Exception as e:
-            print(f"❌ Error creando estructura: {e}")
-            return False
-    
-    def _descargar_dataset_ejemplo(self):
-        """Descarga o crea un dataset de ejemplo."""
-        print("📥 Preparando dataset de ejemplo...")
-        
-        # Por simplicidad, crear imágenes sintéticas de ejemplo
-        import matplotlib.pyplot as plt
-        
-        try:
-            base_dir = "datos_sombreros_ejemplo"
-            categories = ["con_sombrero", "sin_sombrero"]
-            splits = ["train", "validation", "test"]
-            
-            for split in splits:
-                for category in categories:
-                    dir_path = os.path.join(base_dir, split, category)
-                    os.makedirs(dir_path, exist_ok=True)
-                    
-                    # Crear algunas imágenes sintéticas
-                    num_images = 10 if split == "train" else 3
-                    for i in range(num_images):
-                        # Crear imagen sintética simple
-                        fig, ax = plt.subplots(figsize=(2, 2))
-                        
-                        # Simular persona
-                        person = plt.Circle((0.5, 0.3), 0.2, color='peachpuff')
-                        ax.add_patch(person)
-                        
-                        # Agregar sombrero si corresponde
-                        if "con_sombrero" in category:
-                            hat = plt.Rectangle((0.35, 0.45), 0.3, 0.1, color='black')
-                            ax.add_patch(hat)
-                        
-                        ax.set_xlim(0, 1)
-                        ax.set_ylim(0, 1)
-                        ax.set_aspect('equal')
-                        ax.axis('off')
-                        
-                        filename = os.path.join(dir_path, f"ejemplo_{i:03d}.png")
-                        plt.savefig(filename, bbox_inches='tight', dpi=100)
-                        plt.close()
-            
-            print(f"✅ Dataset de ejemplo creado en: {base_dir}")
-            print("⚠️  Nota: Son imágenes sintéticas para prueba")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Error creando dataset: {e}")
-            return False
-    
-    def _ejecutar_entrenamiento(self, modelo_key):
-        """Ejecuta el proceso de entrenamiento."""
-        modelo_info = self.modelos_disponibles[modelo_key]
-        
-        print(f"🏋️  Entrenando {modelo_info['descripcion']}...")
-        
-        if modelo_info['tipo'] == 'custom':
-            return self._entrenar_modelo_custom(modelo_key)
-        elif modelo_info['tipo'] == 'segmentation':
-            return self._entrenar_modelo_segmentacion(modelo_key)
-        else:
-            print("⚠️  Tipo de modelo no soporta entrenamiento personalizado")
-            return False
-    
-    def _entrenar_modelo_custom(self, modelo_key):
-        """Entrena un modelo personalizado."""
-        print("🧠 Iniciando entrenamiento de red personalizada...")
-        
-        # Simular proceso de entrenamiento
-        epochs = self.configuracion['entrenamiento']['epochs']
-        
-        for epoch in range(1, epochs + 1):
-            if epoch % 10 == 0 or epoch in [1, 5]:
-                loss = max(1.0 - (epoch / epochs) * 0.8, 0.1)
-                acc = min(0.5 + (epoch / epochs) * 0.4, 0.9)
-                print(f"  Época {epoch}/{epochs} - Loss: {loss:.3f}, Acc: {acc:.3f}")
-            
-            # Simular tiempo de entrenamiento
-            time.sleep(0.1)
-        
-        print("✅ Entrenamiento completado")
-        return True
-    
-    def _entrenar_modelo_segmentacion(self, modelo_key):
-        """Entrena un modelo de segmentación."""
-        print("🎭 Iniciando entrenamiento de segmentación...")
-        
-        # Simular entrenamiento de segmentación
-        epochs = self.configuracion['entrenamiento']['epochs']
-        
-        for epoch in range(1, epochs + 1):
-            if epoch % 10 == 0 or epoch in [1, 5]:
-                iou = min(0.3 + (epoch / epochs) * 0.5, 0.8)
-                dice = min(0.4 + (epoch / epochs) * 0.4, 0.85)
-                print(f"  Época {epoch}/{epochs} - IoU: {iou:.3f}, Dice: {dice:.3f}")
-            
-            time.sleep(0.1)
-        
-        print("✅ Entrenamiento de segmentación completado")
-        return True
+            print(f"Error en configuración: {e}")
     
     def ejecutar_sistema(self):
         """Ejecuta el sistema principal con menú interactivo."""
-        print("🎩 SISTEMA DE DETECCIÓN DE SOMBREROS - VERSIÓN MEJORADA")
+        print("SISTEMA DE DETECCIÓN DE SOMBREROS - VERSIÓN MEJORADA")
         print("Universidad del Quindío - Visión Artificial")
         print("=" * 60)
         
-        # El sistema siempre está disponible ahora (independiente)
-        print("✅ Sistema mejorado independiente inicializado")
+        print("Sistema mejorado independiente inicializado")
         
         while True:
             self.mostrar_menu_principal()
             
             try:
-                opcion = input("\n🎯 Seleccione una opción: ").strip()
+                opcion = input("\nSeleccione una opción: ").strip()
                 
                 if opcion == '0':
-                    print("👋 ¡Hasta luego!")
+                    print("Hasta luego!")
                     break
                 
                 elif opcion == '1':
-                    # Detección en imagen individual mejorada
+                    # Detección en imagen individual
                     if not self.modelo_activo:
-                        print("ERROR: Seleccione un modelo primero")
+                        print("ERROR: Seleccione un modelo primero (opción 3)")
                         continue
-                    
                     self.detectar_imagen_individual_mejorada()
                 
                 elif opcion == '2':
@@ -1101,593 +658,909 @@ class SistemaDeteccionSombrerosMejorado:
                     self.seleccionar_modelo()
                 
                 elif opcion == '4':
-                    # Entrenar modelo
-                    if not self.modelos_disponibles:
-                        print("❌ No hay modelos disponibles para entrenar")
-                        continue
-                    
-                    # Mostrar modelos que pueden ser entrenados
-                    modelos_entrenables = {k: v for k, v in self.modelos_disponibles.items() 
-                                         if v['requiere_entrenamiento']}
-                    
-                    if not modelos_entrenables:
-                        print("❌ No hay modelos que requieran entrenamiento")
-                        continue
-                    
-                    print("\n🧠 Modelos disponibles para entrenamiento:")
-                    for i, (key, modelo) in enumerate(modelos_entrenables.items(), 1):
-                        status = "✅" if modelo['entrenado'] else "⚠️ "
-                        print(f"  {i}. {modelo['descripcion']} {status}")
-                    
-                    try:
-                        seleccion = int(input("Seleccione modelo a entrenar: "))
-                        modelo_keys = list(modelos_entrenables.keys())
-                        if 1 <= seleccion <= len(modelo_keys):
-                            modelo_key = modelo_keys[seleccion - 1]
-                            self.entrenar_modelo(modelo_key)
-                    except ValueError:
-                        print("❌ Selección inválida")
+                    # Comparativa de modelos
+                    self.comparativa_modelos()
                 
                 elif opcion == '5':
-                    # Configuración
-                    self.configurar_parametros_deteccion()
+                    # Entrenar modelo
+                    print("Funcionalidad de entrenamiento disponible en versión completa")
                 
                 elif opcion == '6':
-                    # Estadísticas independientes
-                    print("\n📊 ESTADÍSTICAS DEL SISTEMA MEJORADO")
-                    print("=" * 45)
-                    print(f"Modelos disponibles: {len(self.modelos_disponibles)}")
-                    print(f"Modelo activo: {self.modelo_activo or 'Ninguno'}")
-                    
-                    # Estadísticas por tipo
-                    tipos = {}
-                    for modelo in self.modelos_disponibles.values():
-                        tipo = modelo['tipo']
-                        tipos[tipo] = tipos.get(tipo, 0) + 1
-                    
-                    print("\nDistribución de modelos:")
-                    for tipo, cantidad in tipos.items():
-                        print(f"  {tipo}: {cantidad}")
-                    
-                    # Estadísticas de entrenamiento
-                    entrenados = sum(1 for m in self.modelos_disponibles.values() if m['entrenado'])
-                    print(f"\nModelos entrenados: {entrenados}/{len(self.modelos_disponibles)}")
-                    print(f"Configuración actual:")
-                    print(f"  - Umbral: {self.configuracion['umbral_confianza']}")
-                    print(f"  - FPS objetivo: {self.configuracion['procesamiento_tiempo_real']['fps_objetivo']}")
-                    print(f"  - Épocas de entrenamiento: {self.configuracion['entrenamiento']['epochs']}")
+                    # Configuración del sistema
+                    self._mostrar_configuracion_sistema()
                 
                 elif opcion == '7':
-                    # Herramientas avanzadas
-                    print("🔧 Herramientas avanzadas - En desarrollo")
+                    # Estadísticas y reportes
+                    self._mostrar_estadisticas()
                 
                 elif opcion == '8':
+                    # Herramientas avanzadas
+                    print("Herramientas avanzadas disponibles en versión completa")
+                
+                elif opcion == '9':
                     # Ayuda
                     self.mostrar_ayuda()
                 
                 else:
-                    print("❌ Opción no válida")
+                    print("Opción inválida. Seleccione una opción válida.")
                     
-                input("\nPresiona Enter para continuar...")
-                
             except KeyboardInterrupt:
-                print("\n👋 Saliendo...")
+                print("\nSaliendo del sistema...")
                 break
             except Exception as e:
-                print(f"❌ Error inesperado: {e}")
+                print(f"Error inesperado: {e}")
+                print("Continuando con la ejecución...")
     
-    def mostrar_ayuda(self):
-        """Muestra ayuda detallada."""
-        ayuda = """
-🎩 AYUDA - SISTEMA DE DETECCIÓN DE SOMBREROS MEJORADO
-===================================================
-
-📋 FUNCIONALIDADES PRINCIPALES:
-
-1. 🔍 DETECCIÓN EN IMAGEN:
-   - Seleccione modelo específico
-   - Configure umbrales de confianza
-   - Visualización de resultados
-   - Guardado automático
-
-2. 📹 DETECCIÓN EN VIDEO:
-   - Tiempo real desde cámara web
-   - Procesamiento de archivos de video
-   - Configuración de FPS y escala
-   - Controles interactivos (q=salir, p=pausa, s=captura)
-
-3. 🧠 GESTIÓN DE MODELOS:
-   - Redes personalizadas (AlexNet, VGG, ResNet)
-   - Modelos preentrenados (YOLO, Faster R-CNN)
-   - Modelos de segmentación (U-Net, Mask R-CNN)
-   - Estado de entrenamiento
-
-4. 📚 ENTRENAMIENTO:
-   - Desde cero con datos propios
-   - Configuración de hiperparámetros
-   - Estructura de datos automática
-   - Dataset de ejemplo sintético
-
-⚙️  CONFIGURACIÓN:
-   - Umbral de confianza (0.0-1.0)
-   - FPS objetivo para video
-   - Escala de procesamiento
-   - Parámetros de entrenamiento
-
-🔧 CONTROLES DE VIDEO:
-   - 'q': Salir
-   - 'p': Pausar/Reanudar
-   - 's': Capturar frame actual
-
-📁 ESTRUCTURA DE DATOS REQUERIDA:
-   datos_sombreros/
-   ├── train/
-   │   ├── con_sombrero/
-   │   └── sin_sombrero/
-   ├── validation/
-   │   ├── con_sombrero/
-   │   └── sin_sombrero/
-   └── test/
-       ├── con_sombrero/
-       └── sin_sombrero/
-
-💡 CONSEJOS:
-   - Use al menos 100 imágenes por categoría para entrenamiento
-   - Ajuste el umbral de confianza según precisión deseada
-   - Para video en tiempo real, reduzca escala si es lento
-   - Los modelos requieren entrenamiento para uso real
-
-⚠️  LIMITACIONES ACTUALES:
-   - Modelos personalizados son simulados sin entrenamiento real
-   - Dataset de ejemplo son imágenes sintéticas
-   - Requiere datos reales para funcionalidad completa
-"""
-        print(ayuda)
-
-    def detectar_imagen_individual_mejorada(self):
-        """Detecta objetos en imagen individual con selección de carpeta, imagen o captura desde cámara."""
-        import os
-        import random
-        
-        print("\n" + "="*60)
-        print("DETECCION EN IMAGEN INDIVIDUAL - VERSION MEJORADA")
-        print("="*60)
-        
-        print("\nSeleccione el origen de la imagen:")
-        print("1. 📁 Cargar imagen desde carpeta")
-        print("2. 📷 Capturar foto desde cámara")
-        print("0. 🔙 Volver al menú principal")
+    def _mostrar_configuracion_sistema(self):
+        """Muestra y permite modificar la configuración del sistema."""
+        print("\nCONFIGURACIÓN DEL SISTEMA:")
+        print("-" * 30)
+        print(f"Umbral de confianza: {self.configuracion['umbral_confianza']}")
+        print(f"FPS objetivo: {self.configuracion['procesamiento_tiempo_real']['fps_objetivo']}")
+        print(f"Mostrar confianza: {self.configuracion['procesamiento_tiempo_real']['mostrar_confianza']}")
+        print("\n1. Cambiar umbral de confianza")
+        print("2. Cambiar FPS objetivo")
+        print("3. Toggle mostrar confianza")
+        print("0. Volver")
         
         try:
-            opcion_origen = input("\nSeleccione opción: ").strip()
+            opcion = input("Seleccione opción: ").strip()
             
-            if opcion_origen == "0":
-                print("CANCELADO: Volviendo al menú principal")
-                return
-            elif opcion_origen == "1":
-                self._detectar_desde_carpeta()
-            elif opcion_origen == "2":
-                self._capturar_y_detectar_desde_camara()
-            else:
-                print("ERROR: Opción inválida")
+            if opcion == '1':
+                nuevo_umbral = float(input("Nuevo umbral (0.1-0.9): "))
+                if 0.1 <= nuevo_umbral <= 0.9:
+                    self.configuracion['umbral_confianza'] = nuevo_umbral
+                    print("Umbral actualizado")
+                    
+            elif opcion == '2':
+                nuevo_fps = int(input("Nuevo FPS (10-60): "))
+                if 10 <= nuevo_fps <= 60:
+                    self.configuracion['procesamiento_tiempo_real']['fps_objetivo'] = nuevo_fps
+                    print("FPS actualizado")
+                    
+            elif opcion == '3':
+                self.configuracion['procesamiento_tiempo_real']['mostrar_confianza'] = \
+                    not self.configuracion['procesamiento_tiempo_real']['mostrar_confianza']
+                estado = "activado" if self.configuracion['procesamiento_tiempo_real']['mostrar_confianza'] else "desactivado"
+                print(f"Mostrar confianza {estado}")
                 
-        except KeyboardInterrupt:
-            print("\nOperacion cancelada por el usuario")
-        except Exception as e:
-            print(f"ERROR en deteccion: {str(e)}")
-            try:
-                cv2.destroyAllWindows()
-            except:
-                pass
+        except ValueError:
+            print("Valor inválido")
     
-    def _capturar_y_detectar_desde_camara(self):
-        """Captura una foto desde la cámara y la procesa."""
-        import random
-        from datetime import datetime
+    def _mostrar_estadisticas(self):
+        """Muestra estadísticas del sistema."""
+        print("\nESTADÍSTICAS DEL SISTEMA:")
+        print("-" * 25)
+        print(f"Modelos disponibles: {len(self.modelos_disponibles)}")
+        print(f"Modelo activo: {self.modelo_activo or 'Ninguno'}")
         
-        print("\n📷 CAPTURA DESDE CÁMARA")
-        print("="*50)
+        if hasattr(self.detector_video, 'modelos_cargados'):
+            print(f"Modelos cargados en memoria: {len(self.detector_video.modelos_cargados)}")
         
-        # Verificar que hay modelo activo
+        print("\nModelos por tipo:")
+        tipos = {}
+        for modelo in self.modelos_disponibles.values():
+            tipo = modelo['tipo']
+            tipos[tipo] = tipos.get(tipo, 0) + 1
+        
+        for tipo, cantidad in tipos.items():
+            print(f"  {tipo}: {cantidad}")
+        
+        input("\nPresione Enter para continuar...")
+    
+    def detectar_imagen_individual_mejorada(self):
+        """Detección en imagen individual usando el detector de video."""
+        print("\nDETECCIÓN EN IMAGEN INDIVIDUAL")
+        print("=" * 35)
+        
         if not self.modelo_activo:
-            print("ERROR: Debe seleccionar un modelo primero")
+            print("Error: Seleccione un modelo primero")
             return
         
-        print("Iniciando cámara...")
+        # Cargar el modelo en el detector de video
+        if not self.detector_video.cargar_modelo(self.modelo_activo):
+            print(f"Error cargando modelo {self.modelo_activo}")
+            return
+        
+        print("Seleccione fuente de imagen:")
+        print("1. Seleccionar de carpeta de imágenes")
+        print("2. Ruta específica de archivo")
+        print("3. Captura desde cámara")
+        print("0. Volver")
+        
+        try:
+            opcion = input("Seleccione opción: ").strip()
+            
+            if opcion == '1':
+                self._seleccionar_imagen_carpeta()
+            elif opcion == '2':
+                ruta_imagen = input("Ruta completa de la imagen: ").strip()
+                if os.path.exists(ruta_imagen) and os.path.isfile(ruta_imagen):
+                    self._procesar_imagen_archivo(ruta_imagen)
+                else:
+                    print("Archivo no encontrado o no es un archivo válido")
+            elif opcion == '3':
+                self._capturar_desde_camara()
+                
+        except Exception as e:
+            print(f"Error en detección de imagen: {e}")
+    
+    def _seleccionar_imagen_carpeta(self, solo_ruta=False):
+        """Permite seleccionar una imagen de la carpeta de imágenes.
+        
+        Args:
+            solo_ruta: Si es True, solo retorna la ruta sin procesarla.
+                      Si es False, procesa la imagen directamente.
+        
+        Returns:
+            str o None: Ruta de la imagen si solo_ruta=True, None en caso contrario.
+        """
+        from utils.image_utils import ImageHandler
+        
+        directorio_imagenes = "images"  # Carpeta por defecto
+        
+        # Obtener imágenes disponibles
+        imagenes = ImageHandler.obtener_imagenes_carpeta(directorio_imagenes)
+        
+        if not imagenes:
+            print(f"\nNo hay imágenes disponibles en {directorio_imagenes}")
+            return None
+        
+        # Mostrar lista de imágenes
+        print(f"\nImágenes disponibles en {directorio_imagenes}:")
+        print("-" * 60)
+        for i, ruta_imagen in enumerate(imagenes, 1):
+            nombre = os.path.basename(ruta_imagen)
+            print(f"{i:2d}. {nombre}")
+        print("-" * 60)
+        print(f"Total: {len(imagenes)} imágenes")
+        
+        try:
+            seleccion = input("\nNúmero de imagen a procesar (0 para cancelar): ").strip()
+            
+            if seleccion == '0':
+                return None
+            
+            indice = int(seleccion) - 1
+            
+            if 0 <= indice < len(imagenes):
+                ruta_imagen = imagenes[indice]
+                
+                if solo_ruta:
+                    return ruta_imagen
+                else:
+                    self._procesar_imagen_archivo(ruta_imagen)
+                    return None
+            else:
+                print("Número de imagen no válido")
+                return None
+                
+        except ValueError:
+            print("Por favor, ingrese un número válido")
+            return None
+    
+    def _procesar_imagen_archivo(self, ruta_imagen):
+        """Procesa una imagen desde archivo con preprocesamiento interactivo opcional."""
+        try:
+            # Verificar que el archivo existe y es un archivo
+            if not os.path.exists(ruta_imagen):
+                print(f"Error: El archivo no existe: {ruta_imagen}")
+                return
+            
+            if not os.path.isfile(ruta_imagen):
+                print(f"Error: La ruta no es un archivo: {ruta_imagen}")
+                return
+            
+            # Cargar imagen usando ImageHandler para consistencia
+            from utils.image_utils import ImageHandler
+            imagen_original = ImageHandler.cargar_imagen(ruta_imagen)
+            
+            if imagen_original is None:
+                print("Error cargando la imagen")
+                return
+            
+            print(f"Procesando imagen: {os.path.basename(ruta_imagen)}")
+            print(f"Dimensiones: {imagen_original.shape[1]}x{imagen_original.shape[0]}")
+            
+            # ===== PREPROCESAMIENTO INTERACTIVO =====
+            print("\n🔧 PREPROCESAMIENTO DE IMAGEN")
+            print("=" * 50)
+            print("¿Desea aplicar técnicas de preprocesamiento a la imagen?")
+            print("Esto puede mejorar la calidad de detección en ciertos casos.")
+            
+            aplicar_preprocesamiento = input("¿Aplicar preprocesamiento? (s/n): ").lower().strip()
+            
+            imagen_a_procesar = imagen_original.copy()
+            tecnicas_aplicadas = []
+            
+            if aplicar_preprocesamiento in ['s', 'si', 'sí', 'y', 'yes']:
+                # Permitir seleccionar técnicas de preprocesamiento
+                tecnicas_seleccionadas = self.preprocesador.seleccionar_tecnicas()
+                
+                if tecnicas_seleccionadas:
+                    # Aplicar técnicas seleccionadas
+                    imagen_a_procesar = self.preprocesador.aplicar_tecnicas_seleccionadas(
+                        imagen_original, tecnicas_seleccionadas
+                    )
+                    tecnicas_aplicadas = tecnicas_seleccionadas
+                    
+                    # Preguntar si quiere ver comparación
+                    ver_comparacion = input("\n¿Desea ver comparación antes/después? (s/n): ").lower().strip()
+                    if ver_comparacion in ['s', 'si', 'sí', 'y', 'yes']:
+                        self.preprocesador.mostrar_comparacion(
+                            imagen_original, imagen_a_procesar, tecnicas_aplicadas
+                        )
+                else:
+                    print("✅ Continuando sin preprocesamiento")
+            else:
+                print("✅ Continuando sin preprocesamiento")
+            
+            # ===== DETECCIÓN =====
+            print("\n🔍 INICIANDO DETECCIÓN...")
+            print("-" * 30)
+            
+            # Realizar detección en la imagen (original o preprocesada)
+            print(f"   Usando modelo: {self.modelo_activo}")
+            print(f"   Imagen shape: {imagen_a_procesar.shape}")
+            
+            resultado = self.detector_video.detectar_en_frame(imagen_a_procesar, self.modelo_activo)
+            
+            if resultado:
+                print(f"✅ Resultado obtenido: tipo={resultado.get('tipo', 'desconocido')}")
+                # Dibujar resultado sobre la imagen procesada
+                imagen_resultado = self.detector_video.dibujar_detecciones(imagen_a_procesar, resultado)
+                
+                # Crear ventana con información sobre preprocesamiento
+                window_title = 'Resultado de Detección'
+                if tecnicas_aplicadas:
+                    tecnicas_str = ', '.join([self.preprocesador.tecnicas_disponibles.get(t, t) for t in tecnicas_aplicadas[:3]])
+                    if len(tecnicas_aplicadas) > 3:
+                        tecnicas_str += f" (+{len(tecnicas_aplicadas)-3} más)"
+                    window_title += f" [Preprocesado: {tecnicas_str}]"
+                window_title += " - Presione cualquier tecla para cerrar"
+                
+                # Mostrar resultado
+                cv2.imshow(window_title, imagen_resultado)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+                
+                # ===== REPORTE DE RESULTADOS =====
+                print(f"\n📊 REPORTE DE DETECCIÓN")
+                print("=" * 50)
+                print(f"Archivo: {os.path.basename(ruta_imagen)}")
+                print(f"Modelo usado: {self.modelo_activo.upper()}")
+                if tecnicas_aplicadas:
+                    print(f"Preprocesamiento aplicado: {len(tecnicas_aplicadas)} técnicas")
+                    for i, tecnica in enumerate(tecnicas_aplicadas, 1):
+                        print(f"  {i}. {self.preprocesador.tecnicas_disponibles.get(tecnica, tecnica)}")
+                else:
+                    print("Preprocesamiento: Ninguno")
+                print("-" * 50)
+                
+                # Si es clasificación ImageNet, mostrar detalles
+                if resultado.get('tipo') == 'clasificacion_imagenet':
+                    print(f"🏷️  CLASIFICACIÓN IMAGENET (1000 clases)")
+                    clase_principal = resultado['clase']
+                    print(f"Clase principal: {clase_principal}")
+                    print(f"Confianza: {resultado['confianza']:.3f} ({resultado['confianza']*100:.1f}%)")
+                    print("\n🏆 Top 5 clases detectadas:")
+                    for i, pred in enumerate(resultado.get('top_5_clases', [])[:5]):
+                        nombre_limpio = pred['clase']
+                        print(f"  {i+1}. {nombre_limpio}: {pred['confianza']:.3f} ({pred['confianza']*100:.1f}%)")
+                    
+                    deteccion_sombrero = resultado.get('deteccion_sombrero', 'sin_sombrero')
+                    mejor_sombrero = resultado.get('mejor_sombrero')
+                    
+                    print(f"\n👒 Análisis de sombrero: {deteccion_sombrero}")
+                    if mejor_sombrero:
+                        nombre_sombrero = mejor_sombrero['clase']
+                        print(f"Mejor detección de sombrero: {nombre_sombrero} ({mejor_sombrero['confianza']:.3f})")
+                    
+                elif resultado.get('tipo') == 'segmentacion_unet':
+                    # Segmentación U-Net
+                    print(f"🔍 SEGMENTACIÓN U-NET")
+                    print(f"Clase: {resultado['clase']}")
+                    print(f"Confianza: {resultado['confianza']:.3f} ({resultado['confianza']*100:.1f}%)")
+                    print(f"Área segmentada: {resultado.get('area_segmentada', 0)} píxeles")
+                    print(f"Porcentaje: {resultado.get('porcentaje', 0):.2f}% del frame")
+                    print(f"Objetos detectados: {resultado.get('num_objetos', 0)}")
+                    
+                    if 'metricas' in resultado:
+                        metricas = resultado['metricas']
+                        print(f"Área contorno principal: {metricas.get('area_contorno_principal', 0)}")
+                        print(f"Densidad: {metricas.get('densidad', 0):.2f}%")
+                    
+                    # Mostrar BBox si existe
+                    bbox = resultado.get('bbox')
+                    if bbox:
+                        print(f"Bounding Box: x={bbox[0]}, y={bbox[1]}, w={bbox[2]}, h={bbox[3]}")
+                
+                elif resultado.get('tipo') == 'segmentacion_mask_rcnn':
+                    # Segmentación Mask R-CNN
+                    print(f"🔍 SEGMENTACIÓN MASK R-CNN")
+                    print(f"Clase: {resultado['clase']}")
+                    print(f"Confianza: {resultado['confianza']:.3f} ({resultado['confianza']*100:.1f}%)")
+                    
+                    instancias = resultado.get('instancias', [])
+                    print(f"Instancias detectadas: {len(instancias)}")
+                    
+                    for i, inst in enumerate(instancias[:5]):  # Mostrar máximo 5
+                        print(f"  Instancia {i+1}: {inst.get('clase', 'N/A')} (conf: {inst.get('confianza', 0):.2f})")
+                
+                else:
+                    # Para otros tipos de detección (YOLO, etc.)
+                    print(f"🔍 DETECCIÓN GENERAL")
+                    print(f"Tipo: {resultado.get('tipo', 'desconocido')}")
+                    print(f"Clase: {resultado['clase']}")
+                    print(f"Confianza: {resultado['confianza']:.3f}")
+                    print(f"Tipo: {resultado['tipo']}")
+                    
+                    # Mostrar estadísticas adicionales para segmentación
+                    if resultado['tipo'] in ['segmentacion_unet', 'segmentacion_semantica', 'segmentacion_instancias']:
+                        print(f"\n📊 Estadísticas de Segmentación:")
+                        print(f"Área segmentada: {resultado.get('area_segmentada', 0):,} píxeles")
+                        print(f"Porcentaje de imagen: {resultado.get('porcentaje', 0):.2f}%")
+                        
+                        if 'num_objetos' in resultado:
+                            print(f"Objetos detectados: {resultado['num_objetos']}")
+                        
+                        if 'bbox' in resultado and resultado['bbox']:
+                            bbox = resultado['bbox']
+                            print(f"Bounding Box: ({bbox[0]}, {bbox[1]}) - {bbox[2]}x{bbox[3]}")
+                        
+                        # Métricas adicionales de U-Net
+                        if 'metricas' in resultado:
+                            metricas = resultado['metricas']
+                            print(f"\n🔬 Métricas Detalladas:")
+                            print(f"  • Área contorno principal: {metricas.get('area_contorno_principal', 0):,} px")
+                            print(f"  • Densidad de segmentación: {metricas.get('densidad', 0):.1f}%")
+                            print(f"  • Resolución: {metricas.get('pixeles_totales', 0):,} px totales")
+                        
+                        # Clases detectadas (para segmentación semántica)
+                        if 'clases_detectadas' in resultado:
+                            print(f"\n🏷️  Clases detectadas:")
+                            for clase in resultado['clases_detectadas']:
+                                print(f"  • {clase}")
+                
+                # Guardar información del procesamiento
+                if tecnicas_aplicadas:
+                    info_archivo = {
+                        'archivo': ruta_imagen,
+                        'modelo': self.modelo_activo,
+                        'tecnicas_preprocesamiento': tecnicas_aplicadas,
+                        'resultado': resultado,
+                        'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+                    }
+                    
+                    # Opcional: guardar reporte
+                    guardar_reporte = input("\n💾 ¿Desea guardar un reporte de este procesamiento? (s/n): ").lower().strip()
+                    if guardar_reporte in ['s', 'si', 'sí', 'y', 'yes']:
+                        self._guardar_reporte_procesamiento(info_archivo)
+                
+                # Preguntar si guardar resultado
+                guardar = input("\n¿Guardar imagen con detecciones? (s/N): ").strip().lower()
+                if guardar == 's':
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    nombre_archivo = f"deteccion_{self.modelo_activo}_{timestamp}.jpg"
+                    ruta_salida = os.path.join("resultados_deteccion", "neural_networks", nombre_archivo)
+                    
+                    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
+                    cv2.imwrite(ruta_salida, imagen_resultado)
+                    print(f"✅ Imagen guardada en: {ruta_salida}")
+                
+            else:
+                print("❌ No se detectaron objetos en la imagen")
+                
+        except Exception as e:
+            print(f"Error procesando imagen: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def _capturar_desde_camara(self):
+        """Captura una imagen desde la cámara para análisis."""
+        print("Capturando desde cámara. Presione ESPACIO para capturar, 'q' para salir")
+        
         cap = cv2.VideoCapture(0)
-        
         if not cap.isOpened():
-            print("ERROR: No se pudo abrir la cámara")
-            print("Verifique que:")
-            print("- La cámara esté conectada")
-            print("- No esté siendo usada por otra aplicación")
-            print("- Tenga permisos para acceder a la cámara")
+            print("Error: No se pudo abrir la cámara")
             return
-        
-        # Configurar resolución de cámara
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-        
-        print("\n✅ Cámara iniciada correctamente")
-        print("\nCONTROLES:")
-        print("- Presione ESPACIO para capturar la foto")
-        print("- Presione 'q' o ESC para cancelar")
-        print("\nPosicione el objeto en el cuadro y presione ESPACIO...")
-        
-        foto_capturada = None
-        ventana_nombre = "Captura de Foto - Presione ESPACIO"
         
         try:
             while True:
                 ret, frame = cap.read()
                 if not ret:
-                    print("ERROR: No se pudo leer de la cámara")
+                    print("Error capturando frame")
                     break
                 
-                # Crear una copia para visualización con guías
-                frame_display = frame.copy()
-                height, width = frame_display.shape[:2]
+                cv2.imshow('Captura de Imagen - ESPACIO: capturar, Q: salir', frame)
                 
-                # Dibujar guías de composición (regla de tercios)
-                color_guia = (0, 255, 0)
-                # Líneas verticales
-                cv2.line(frame_display, (width//3, 0), (width//3, height), color_guia, 1)
-                cv2.line(frame_display, (2*width//3, 0), (2*width//3, height), color_guia, 1)
-                # Líneas horizontales
-                cv2.line(frame_display, (0, height//3), (width, height//3), color_guia, 1)
-                cv2.line(frame_display, (0, 2*height//3), (width, 2*height//3), color_guia, 1)
-                
-                # Información en pantalla
-                cv2.putText(frame_display, "Presione ESPACIO para capturar", (10, 30),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-                cv2.putText(frame_display, "Presione Q o ESC para cancelar", (10, 60),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-                
-                # Mostrar resolución
-                cv2.putText(frame_display, f"Resolucion: {width}x{height}", (10, height-20),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-                
-                cv2.imshow(ventana_nombre, frame_display)
-                
-                # Capturar tecla
                 key = cv2.waitKey(1) & 0xFF
-                
-                if key == 32:  # ESPACIO
-                    foto_capturada = frame.copy()
-                    print("\n📸 ¡Foto capturada!")
+                if key == ord(' '):
+                    # Procesar el frame capturado
+                    resultado = self.detector_video.detectar_en_frame(frame, self.modelo_activo)
                     
-                    # Efecto flash
-                    flash = np.ones_like(frame) * 255
-                    for alpha in [0.7, 0.4, 0.1]:
-                        flash_frame = cv2.addWeighted(frame, 1-alpha, flash, alpha, 0)
-                        cv2.imshow(ventana_nombre, flash_frame)
-                        cv2.waitKey(50)
+                    if resultado:
+                        frame_resultado = self.detector_video.dibujar_detecciones(frame, resultado)
+                        cv2.imshow('Resultado - Presione cualquier tecla para continuar', frame_resultado)
+                        cv2.waitKey(0)
+                        
+                        print("\nResultado de la captura:")
+                        print(f"Clase: {resultado['clase']}")
+                        print(f"Confianza: {resultado['confianza']:.3f}")
+                    else:
+                        print("No se detectaron objetos en la captura")
                     
+                elif key == ord('q'):
                     break
                     
-                elif key == ord('q') or key == 27:  # Q o ESC
-                    print("\nCAPTURA CANCELADA")
-                    break
-        
         finally:
             cap.release()
             cv2.destroyAllWindows()
-        
-        # Si no se capturó foto, salir
-        if foto_capturada is None:
-            print("No se capturó ninguna foto")
-            return
-        
-        # Preguntar si guardar la foto original
-        print("\n¿Desea guardar la foto capturada? (s/n): ", end="")
-        if input().lower() == 's':
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            nombre_foto = f"captura_{timestamp}.jpg"
-            
-            # Crear carpeta de capturas si no existe
-            carpeta_capturas = "capturas"
-            os.makedirs(carpeta_capturas, exist_ok=True)
-            
-            ruta_foto = os.path.join(carpeta_capturas, nombre_foto)
-            if cv2.imwrite(ruta_foto, foto_capturada):
-                print(f"✅ Foto guardada: {ruta_foto}")
-            else:
-                print("⚠️  No se pudo guardar la foto")
-        
-        # Procesar la foto capturada
-        print("\n" + "="*50)
-        print("PROCESANDO FOTO CAPTURADA")
-        print("="*50)
-        
-        # Obtener información del modelo
-        modelo_info = self.modelos_disponibles[self.modelo_activo]
-        print(f"Modelo: {modelo_info['descripcion']}")
-        print(f"Tipo: {modelo_info['tipo']}")
-        
-        # Crear copia para procesamiento
-        imagen_procesada = foto_capturada.copy()
-        
-        print("\n🔍 Detectando sombreros en la imagen...")
-        
-        # Aplicar detección según tipo de modelo
-        detecciones = 0
-        tiempo_inicio = time.time()
-        
-        if modelo_info['tipo'] == 'pretrained':
-            detecciones = self._detectar_frame_preentrenado(imagen_procesada, modelo_info)
-        elif modelo_info['tipo'] == 'custom':
-            detecciones = self._detectar_frame_custom(imagen_procesada, modelo_info)
-        elif modelo_info['tipo'] == 'segmentation':
-            detecciones = self._detectar_frame_segmentacion(imagen_procesada, modelo_info)
-        
-        tiempo_procesamiento = time.time() - tiempo_inicio
-        
-        # Mostrar resultados
-        print("\n" + "="*50)
-        print("RESULTADOS DE DETECCIÓN")
-        print("="*50)
-        print(f"✓ Sombreros detectados: {detecciones}")
-        print(f"✓ Confianza promedio: {random.uniform(0.70, 0.95):.3f}")
-        print(f"✓ Tiempo de procesamiento: {tiempo_procesamiento:.2f}s")
-        print(f"✓ Modelo utilizado: {modelo_info['nombre'].upper()}")
-        
-        # Agregar información de resultados en la imagen
-        cv2.putText(imagen_procesada, f"Sombreros detectados: {detecciones}", 
-                   (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-        cv2.putText(imagen_procesada, f"Modelo: {modelo_info['nombre'].upper()}", 
-                   (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-        
-        # Mostrar imagen procesada
-        ventana_resultado = "Resultado de Detección - Foto Capturada"
-        cv2.imshow(ventana_resultado, imagen_procesada)
-        
-        print(f"\n📺 Imagen mostrada en ventana: '{ventana_resultado}'")
-        print("\nOPCIONES:")
-        print("- Presione 's' para GUARDAR resultado")
-        print("- Presione 'c' para COMPARAR (original vs procesada)")
-        print("- Presione cualquier otra tecla para CERRAR")
-        
-        # Esperar interacción del usuario
-        while True:
-            tecla = cv2.waitKey(0) & 0xFF
-            
-            if tecla == ord('s'):
-                # Guardar resultado
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                nombre_resultado = f"deteccion_{timestamp}_{detecciones}_sombreros.jpg"
-                
-                carpeta_resultados = "resultados"
-                os.makedirs(carpeta_resultados, exist_ok=True)
-                
-                ruta_resultado = os.path.join(carpeta_resultados, nombre_resultado)
-                
-                if cv2.imwrite(ruta_resultado, imagen_procesada):
-                    print(f"✅ Resultado guardado: {ruta_resultato}")
-                else:
-                    print("❌ ERROR: No se pudo guardar el resultado")
-                break
-                
-            elif tecla == ord('c'):
-                # Mostrar comparación
-                print("\n🔄 Mostrando comparación...")
-                
-                # Redimensionar si es necesario para mostrar lado a lado
-                height, width = foto_capturada.shape[:2]
-                max_width = 1920
-                
-                if width * 2 > max_width:
-                    scale = max_width / (width * 2)
-                    new_width = int(width * scale)
-                    new_height = int(height * scale)
-                    foto_original_resize = cv2.resize(foto_capturada, (new_width, new_height))
-                    foto_procesada_resize = cv2.resize(imagen_procesada, (new_width, new_height))
-                else:
-                    foto_original_resize = foto_capturada
-                    foto_procesada_resize = imagen_procesada
-                
-                # Crear imagen comparativa
-                comparacion = np.hstack([foto_original_resize, foto_procesada_resize])
-                
-                # Agregar etiquetas
-                cv2.putText(comparacion, "ORIGINAL", (10, 40),
-                           cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-                cv2.putText(comparacion, "DETECCION", (foto_original_resize.shape[1] + 10, 40),
-                           cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                
-                cv2.destroyWindow(ventana_resultado)
-                cv2.imshow("Comparación - Original vs Detección", comparacion)
-                print("Presione cualquier tecla para cerrar la comparación...")
-                cv2.waitKey(0)
-                break
-                
-            else:
-                print("Cerrando ventana...")
-                break
-        
-        cv2.destroyAllWindows()
-        print("\n✅ Detección desde cámara completada exitosamente!")
     
-    def _detectar_desde_carpeta(self):
-        """Detecta objetos en imagen cargada desde carpeta."""
-        import os
-        import random
-        
+    def _guardar_reporte_procesamiento(self, info_archivo):
+        """Guarda un reporte detallado del procesamiento realizado."""
         try:
-            # Mostrar carpetas disponibles como referencia
-            print("\nCarpetas disponibles en el directorio actual:")
-            try:
-                carpetas = [d for d in os.listdir('.') if os.path.isdir(d)]
-                for idx, carpeta in enumerate(carpetas[:10], 1):
-                    print(f"  {idx}. {carpeta}")
-                if len(carpetas) > 10:
-                    print(f"  ... y {len(carpetas) - 10} carpetas más")
-            except:
-                print("  (No se pudieron listar las carpetas)")
+            # Crear directorio de reportes si no existe
+            directorio_reportes = os.path.join("resultados_deteccion", "reportes_preprocesamiento")
+            os.makedirs(directorio_reportes, exist_ok=True)
             
-            # Solicitar ruta de carpeta manualmente
-            print(f"\nDirectorio actual: {os.getcwd()}")
-            print("Opciones de entrada:")
-            print("1. Nombre de carpeta (ej: images)")
-            print("2. Ruta relativa (ej: ../otras_imagenes)")
-            print("3. Ruta absoluta completa")
-            print("0. Cancelar y volver")
+            # Generar nombre de archivo único
+            timestamp = info_archivo['timestamp']
+            nombre_base = os.path.splitext(os.path.basename(info_archivo['archivo']))[0]
+            nombre_reporte = f"reporte_{nombre_base}_{timestamp}.json"
+            ruta_reporte = os.path.join(directorio_reportes, nombre_reporte)
             
-            entrada_carpeta = input("\nIngrese la ruta de la carpeta de imagenes: ").strip()
+            # Preparar datos para el reporte
+            reporte = {
+                'metadata': {
+                    'archivo_origen': info_archivo['archivo'],
+                    'nombre_archivo': os.path.basename(info_archivo['archivo']),
+                    'timestamp': timestamp,
+                    'fecha_procesamiento': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'modelo_usado': info_archivo['modelo']
+                },
+                'preprocesamiento': {
+                    'tecnicas_aplicadas': info_archivo['tecnicas_preprocesamiento'],
+                    'descripcion_tecnicas': [
+                        self.preprocesador.tecnicas_disponibles.get(t, t) 
+                        for t in info_archivo['tecnicas_preprocesamiento']
+                    ]
+                },
+                'resultado_deteccion': info_archivo['resultado'],
+                'configuracion_sistema': {
+                    'umbral_confianza': self.detector_video.configuracion.get('umbral_confianza', 0.5),
+                    'version_sistema': 'mejorado_v2.0'
+                }
+            }
             
-            if entrada_carpeta == "0" or not entrada_carpeta:
-                print("CANCELADO: Operacion cancelada")
-                return
+            # Guardar reporte en JSON
+            with open(ruta_reporte, 'w', encoding='utf-8') as f:
+                json.dump(reporte, f, indent=2, ensure_ascii=False)
             
-            # Procesar la entrada
-            if not os.path.isabs(entrada_carpeta):
-                # Si es ruta relativa, combinar con directorio actual
-                carpeta_imagenes = os.path.abspath(entrada_carpeta)
-            else:
-                carpeta_imagenes = entrada_carpeta
+            print(f"✅ Reporte guardado: {ruta_reporte}")
             
-            # Verificar que la carpeta existe
-            if not os.path.exists(carpeta_imagenes):
-                print(f"ERROR: La carpeta '{carpeta_imagenes}' no existe")
-                print("Verifique que la ruta sea correcta")
-                return
+            # También crear un reporte en texto plano más legible
+            nombre_txt = f"reporte_{nombre_base}_{timestamp}.txt"
+            ruta_txt = os.path.join(directorio_reportes, nombre_txt)
             
-            if not os.path.isdir(carpeta_imagenes):
-                print(f"ERROR: '{carpeta_imagenes}' no es una carpeta")
-                return
+            with open(ruta_txt, 'w', encoding='utf-8') as f:
+                f.write("REPORTE DE PROCESAMIENTO DE IMAGEN CON PREPROCESAMIENTO\n")
+                f.write("=" * 60 + "\n\n")
+                f.write(f"Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Archivo: {os.path.basename(info_archivo['archivo'])}\n")
+                f.write(f"Ruta completa: {info_archivo['archivo']}\n")
+                f.write(f"Modelo usado: {info_archivo['modelo'].upper()}\n\n")
                 
-            print(f"Carpeta seleccionada: {carpeta_imagenes}")
-            
-            # Buscar imágenes en la carpeta
-            extensiones_validas = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp', '.avif')
-            imagenes_encontradas = []
-            
-            try:
-                for archivo in os.listdir(carpeta_imagenes):
-                    if archivo.lower().endswith(extensiones_validas):
-                        imagenes_encontradas.append(archivo)
-            except PermissionError:
-                print(f"ERROR: Sin permisos para acceder a la carpeta '{carpeta_imagenes}'")
-                return
-            except Exception as e:
-                print(f"ERROR al listar archivos: {e}")
-                return
-            
-            if not imagenes_encontradas:
-                print(f"ERROR: No se encontraron imagenes en {carpeta_imagenes}")
-                print(f"Formatos soportados: {', '.join(extensiones_validas)}")
-                return
-            
-            # Mostrar lista de imágenes disponibles
-            print(f"\nImagenes encontradas ({len(imagenes_encontradas)}):")
-            print("-" * 50)
-            
-            for idx, imagen in enumerate(imagenes_encontradas, 1):
-                try:
-                    ruta_completa = os.path.join(carpeta_imagenes, imagen)
-                    tamano = os.path.getsize(ruta_completa)
-                    tamano_mb = tamano / (1024 * 1024)
-                    print(f"{idx:2d}. {imagen} ({tamano_mb:.2f} MB)")
-                except Exception:
-                    print(f"{idx:2d}. {imagen}")
-            
-            # Seleccionar imagen
-            print("\n0. Volver al menu principal")
-            try:
-                seleccion = int(input(f"\nSeleccione imagen (1-{len(imagenes_encontradas)}): "))
-                
-                if seleccion == 0:
-                    print("Volviendo al menu principal...")
-                    return
-                    
-                if seleccion < 1 or seleccion > len(imagenes_encontradas):
-                    print("ERROR: Seleccion invalida")
-                    return
-                    
-                imagen_seleccionada = imagenes_encontradas[seleccion - 1]
-                ruta_imagen = os.path.join(carpeta_imagenes, imagen_seleccionada)
-                
-            except ValueError:
-                print("ERROR: Ingrese un numero valido")
-                return
-            
-            print(f"\nProcesando: {imagen_seleccionada}")
-            print("-" * 50)
-            
-            # Cargar y procesar imagen
-            imagen = cv2.imread(ruta_imagen)
-            if imagen is None:
-                print(f"ERROR: No se pudo cargar la imagen {imagen_seleccionada}")
-                print("Verifique que el archivo no este corrupto")
-                return
-            
-            print(f"Imagen cargada: {imagen.shape[1]}x{imagen.shape[0]} pixeles")
-            
-            # Obtener información del modelo activo
-            modelo_info = self.modelos_disponibles[self.modelo_activo]
-            print(f"Usando modelo: {modelo_info['descripcion']}")
-            print(f"Tipo: {modelo_info['tipo']}")
-            
-            # Simular procesamiento
-            print("\nProcesando imagen...")
-            
-            # Aplicar detección según el tipo de modelo
-            imagen_procesada = imagen.copy()
-            detecciones = 0
-            
-            if modelo_info['tipo'] == 'pretrained':
-                detecciones = self._detectar_frame_preentrenado(imagen_procesada, modelo_info)
-            elif modelo_info['tipo'] == 'custom':
-                detecciones = self._detectar_frame_custom(imagen_procesada, modelo_info)
-            elif modelo_info['tipo'] == 'segmentation':
-                detecciones = self._detectar_frame_segmentacion(imagen_procesada, modelo_info)
-            
-            # Mostrar resultados
-            print(f"\nRESULTADOS DE DETECCION:")
-            print(f"- Objetos detectados: {detecciones}")
-            print(f"- Confianza promedio: {random.uniform(0.75, 0.95):.3f}")
-            print(f"- Tiempo de procesamiento: {random.uniform(0.5, 2.0):.2f}s")
-            
-            # Mostrar imagen procesada
-            ventana_nombre = f"Deteccion - {imagen_seleccionada}"
-            cv2.imshow(ventana_nombre, imagen_procesada)
-            
-            print(f"\nImagen mostrada en ventana: '{ventana_nombre}'")
-            print("Controles:")
-            print("- Presione cualquier tecla para cerrar la imagen")
-            print("- Presione 's' para guardar resultado")
-            print("- Presione ESC para cerrar sin guardar")
-            
-            # Esperar entrada del usuario
-            while True:
-                tecla = cv2.waitKey(0) & 0xFF
-                
-                if tecla == ord('s'):
-                    # Guardar resultado
-                    nombre_base = os.path.splitext(imagen_seleccionada)[0]
-                    nombre_salida = f"deteccion_{nombre_base}_resultado.jpg"
-                    ruta_salida = os.path.join(carpeta_imagenes, nombre_salida)
-                    
-                    if cv2.imwrite(ruta_salida, imagen_procesada):
-                        print(f"Resultado guardado: {ruta_salida}")
-                    else:
-                        print("ERROR: No se pudo guardar el archivo")
-                    break
-                elif tecla == 27:  # ESC
-                    print("Cerrando sin guardar...")
-                    break
+                f.write("TÉCNICAS DE PREPROCESAMIENTO APLICADAS:\n")
+                f.write("-" * 40 + "\n")
+                if info_archivo['tecnicas_preprocesamiento']:
+                    for i, tecnica in enumerate(info_archivo['tecnicas_preprocesamiento'], 1):
+                        desc = self.preprocesador.tecnicas_disponibles.get(tecnica, tecnica)
+                        f.write(f"{i}. {desc}\n")
                 else:
-                    print("Cerrando imagen...")
-                    break
+                    f.write("Ninguna técnica aplicada\n")
+                
+                f.write("\nRESULTADO DE LA DETECCIÓN:\n")
+                f.write("-" * 30 + "\n")
+                resultado = info_archivo['resultado']
+                
+                if resultado.get('tipo') == 'clasificacion_imagenet':
+                    f.write(f"Tipo: Clasificación ImageNet (1000 clases)\n")
+                    f.write(f"Clase principal: {resultado['clase']}\n")
+                    f.write(f"Confianza: {resultado['confianza']:.3f} ({resultado['confianza']*100:.1f}%)\n\n")
+                    
+                    f.write("Top 5 clases detectadas:\n")
+                    for i, pred in enumerate(resultado.get('top_5_clases', [])[:5]):
+                        nombre = pred['clase']
+                        f.write(f"  {i+1}. {nombre}: {pred['confianza']:.3f} ({pred['confianza']*100:.1f}%)\n")
+                    
+                    if resultado.get('mejor_sombrero'):
+                        f.write(f"\nAnálisis de sombrero: {resultado.get('deteccion_sombrero', 'sin_sombrero')}\n")
+                        mejor = resultado['mejor_sombrero']
+                        f.write(f"Mejor detección de sombrero: {mejor['clase']} ({mejor['confianza']:.3f})\n")
+                else:
+                    f.write(f"Clase: {resultado['clase']}\n")
+                    f.write(f"Confianza: {resultado['confianza']:.3f}\n")
+                    f.write(f"Tipo: {resultado['tipo']}\n")
+                
+                f.write(f"\nConfiguración del sistema:\n")
+                f.write(f"Umbral de confianza: {self.detector_video.configuracion.get('umbral_confianza', 0.5)}\n")
+                f.write(f"Versión: Sistema Mejorado v2.0\n")
             
-            cv2.destroyAllWindows()
-            print("\nDeteccion completada exitosamente!")
+            print(f"✅ Reporte de texto guardado: {ruta_txt}")
             
         except Exception as e:
-            print(f"ERROR: {str(e)}")
+            print(f"❌ Error guardando reporte: {e}")
+
+    def comparativa_modelos(self):
+        """
+        Realiza una comparativa completa de todos los modelos disponibles.
+        Similar al notebook, con estadísticas y gráficos de las detecciones.
+        """
+        print("\n" + "=" * 70)
+        print("COMPARATIVA DE MODELOS - ANÁLISIS COMPLETO")
+        print("=" * 70)
+        
+        # Seleccionar imagen
+        print("\n📷 SELECCIÓN DE IMAGEN")
+        print("-" * 40)
+        ruta_imagen = self._seleccionar_imagen_carpeta(solo_ruta=True)
+        
+        if not ruta_imagen:
+            print("❌ No se seleccionó ninguna imagen")
+            return
+        
+        # Cargar imagen
+        try:
+            imagen_original = cv2.imread(ruta_imagen)
+            if imagen_original is None:
+                print(f"❌ Error: No se pudo cargar la imagen desde {ruta_imagen}")
+                return
+            
+            imagen_original = cv2.cvtColor(imagen_original, cv2.COLOR_BGR2RGB)
+            print(f"✅ Imagen cargada: {os.path.basename(ruta_imagen)}")
+            print(f"   Tamaño: {imagen_original.shape}")
+            
+        except Exception as e:
+            print(f"❌ Error cargando imagen: {e}")
+            return
+        
+        # Preguntar por preprocesamiento
+        print("\n" + "=" * 70)
+        print("🔧 PREPROCESAMIENTO OPCIONAL")
+        print("=" * 70)
+        print("El preprocesamiento puede mejorar la calidad de detección.")
+        print("\nTécnicas disponibles:")
+        print("  1. Ecualización de histograma (mejorar iluminación)")
+        print("  2. CLAHE (mejorar contraste local)")
+        print("  3. Mejora de saturación")
+        print("  4. Filtro bilateral (reducir ruido)")
+        
+        aplicar_prep = input("\n¿Aplicar preprocesamiento? (s/n): ").lower().strip()
+        
+        imagen_a_procesar = imagen_original.copy()
+        tecnicas_aplicadas = []
+        
+        if aplicar_prep in ['s', 'si', 'sí', 'y', 'yes']:
+            tecnicas_seleccionadas = self.preprocesador.seleccionar_tecnicas()
+            
+            if tecnicas_seleccionadas:
+                imagen_a_procesar = self.preprocesador.aplicar_tecnicas_seleccionadas(
+                    imagen_original, tecnicas_seleccionadas
+                )
+                tecnicas_aplicadas = tecnicas_seleccionadas
+                
+                # Mostrar comparación
+                ver_comp = input("\n¿Ver comparación antes/después? (s/n): ").lower().strip()
+                if ver_comp in ['s', 'si', 'sí', 'y', 'yes']:
+                    self.preprocesador.mostrar_comparacion(
+                        imagen_original, imagen_a_procesar, tecnicas_aplicadas
+                    )
+        
+        # Seleccionar modelos para comparar
+        print("\n" + "=" * 70)
+        print("🧠 SELECCIÓN DE MODELOS")
+        print("=" * 70)
+        
+        # Modelos de ImageNet disponibles para comparación
+        modelos_imagenet = ['vgg16', 'resnet50', 'resnet101']
+        
+        print(f"Modelos de ImageNet disponibles: {len(modelos_imagenet)}")
+        for i, modelo in enumerate(modelos_imagenet, 1):
+            print(f"  {i}. {modelo.upper()}")
+        
+        seleccionar = input("\n¿Analizar todos los modelos de ImageNet? (s/n): ").lower().strip()
+        
+        if seleccionar not in ['s', 'si', 'sí', 'y', 'yes']:
+            print("Comparativa cancelada")
+            return
+        
+        # Ejecutar análisis con todos los modelos
+        print("\n" + "=" * 70)
+        print("🔍 EJECUTANDO ANÁLISIS COMPARATIVO")
+        print("=" * 70)
+        
+        resultados_comparativa = {}
+        
+        for modelo_nombre in modelos_imagenet:
+            print(f"\nAnalizando con {modelo_nombre.upper()}...")
+            
             try:
-                cv2.destroyAllWindows()
-            except:
-                pass
+                # Cargar modelo
+                if not self.detector_video.cargar_modelo(modelo_nombre):
+                    print(f"  ❌ Error cargando {modelo_nombre}")
+                    continue
+                
+                # Realizar detección
+                resultado = self.detector_video.detectar_en_frame(imagen_a_procesar, modelo_nombre)
+                
+                if resultado and resultado.get('tipo') == 'clasificacion_imagenet':
+                    resultados_comparativa[modelo_nombre] = resultado
+                    top_clase = resultado['clase']
+                    top_conf = resultado['confianza']
+                    print(f"  ✅ Clase principal: {top_clase} ({top_conf:.3f})")
+                else:
+                    print(f"  ⚠️  No se obtuvieron resultados válidos")
+                    
+            except Exception as e:
+                print(f"  ❌ Error: {e}")
+        
+        if not resultados_comparativa:
+            print("\n❌ No se pudieron obtener resultados de ningún modelo")
+            return
+        
+        # Generar visualizaciones y estadísticas
+        self._generar_visualizaciones_comparativa(
+            imagen_original,
+            imagen_a_procesar,
+            resultados_comparativa,
+            tecnicas_aplicadas,
+            os.path.basename(ruta_imagen)
+        )
+        
+        # Generar reporte
+        self._generar_reporte_comparativa(
+            resultados_comparativa,
+            tecnicas_aplicadas,
+            ruta_imagen
+        )
+        
+        print("\n" + "=" * 70)
+        print("✅ COMPARATIVA COMPLETADA")
+        print("=" * 70)
+
+    def _generar_visualizaciones_comparativa(self, imagen_original, imagen_procesada, 
+                                            resultados, tecnicas, nombre_archivo):
+        """Genera visualizaciones estilo notebook para la comparativa."""
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.gridspec as gridspec
+            
+            num_modelos = len(resultados)
+            
+            # Crear figura grande con grid personalizado
+            fig = plt.figure(figsize=(20, 12))
+            gs = gridspec.GridSpec(3, num_modelos + 1, figure=fig, hspace=0.3, wspace=0.3)
+            
+            # Fila 1: Imagen original y procesada
+            ax_orig = fig.add_subplot(gs[0, 0])
+            ax_orig.imshow(imagen_original)
+            ax_orig.set_title(f"📷 Imagen Original\n{nombre_archivo}", fontsize=10, fontweight='bold')
+            ax_orig.axis('off')
+            
+            if tecnicas:
+                ax_proc = fig.add_subplot(gs[0, 1])
+                ax_proc.imshow(imagen_procesada)
+                tecnicas_str = ', '.join([self.preprocesador.tecnicas_disponibles.get(t, t) for t in tecnicas[:2]])
+                if len(tecnicas) > 2:
+                    tecnicas_str += f" (+{len(tecnicas)-2})"
+                ax_proc.set_title(f"🔧 Preprocesada\n{tecnicas_str}", fontsize=10, fontweight='bold')
+                ax_proc.axis('off')
+            
+            # Fila 2 y 3: Resultados por modelo
+            colores = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#ff99cc']
+            
+            for idx, (modelo_nombre, resultado) in enumerate(resultados.items()):
+                # Top 5 clases en gráfico de barras
+                ax_bar = fig.add_subplot(gs[1, idx])
+                
+                top_5 = resultado.get('top_5_clases', [])[:5]
+                nombres = [pred['clase'][:20] for pred in top_5]
+                confianzas = [pred['confianza'] * 100 for pred in top_5]
+                
+                bars = ax_bar.barh(range(len(nombres)), confianzas, color=colores[:len(nombres)])
+                ax_bar.set_yticks(range(len(nombres)))
+                ax_bar.set_yticklabels(nombres, fontsize=8)
+                ax_bar.set_xlabel('Confianza (%)', fontsize=9)
+                ax_bar.set_title(f'{modelo_nombre.upper()}\nTop 5 Predicciones', 
+                                fontsize=10, fontweight='bold')
+                ax_bar.set_xlim(0, 100)
+                ax_bar.invert_yaxis()
+                
+                # Agregar valores
+                for i, (bar, conf) in enumerate(zip(bars, confianzas)):
+                    ax_bar.text(bar.get_width() + 1, bar.get_y() + bar.get_height()/2,
+                              f'{conf:.1f}%', va='center', fontsize=8, fontweight='bold')
+                
+                # Información detallada
+                ax_info = fig.add_subplot(gs[2, idx])
+                ax_info.axis('off')
+                
+                info_texto = f"🏆 Clase Principal:\n{top_5[0]['clase']}\n\n"
+                info_texto += f"📊 Confianza: {top_5[0]['confianza']*100:.2f}%\n\n"
+                info_texto += "📋 Top 3:\n"
+                for i, pred in enumerate(top_5[:3], 1):
+                    info_texto += f"{i}. {pred['clase'][:25]}\n   {pred['confianza']*100:.1f}%\n"
+                
+                ax_info.text(0.1, 0.9, info_texto, transform=ax_info.transAxes,
+                           fontsize=8, verticalalignment='top', fontfamily='monospace',
+                           bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.3))
+            
+            # Título general
+            prep_info = f" [Preprocesamiento: {len(tecnicas)} técnicas]" if tecnicas else ""
+            fig.suptitle(f'Comparativa de Modelos CNN - ImageNet{prep_info}',
+                        fontsize=16, fontweight='bold')
+            
+            plt.tight_layout()
+            
+            # Guardar figura
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            ruta_salida = os.path.join("resultados_deteccion", "comparativas", 
+                                      f"comparativa_{timestamp}.png")
+            os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
+            plt.savefig(ruta_salida, dpi=300, bbox_inches='tight')
+            print(f"\n📊 Visualización guardada: {ruta_salida}")
+            
+            plt.show()
+            
+        except Exception as e:
+            print(f"❌ Error generando visualizaciones: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def _generar_reporte_comparativa(self, resultados, tecnicas, ruta_imagen):
+        """Genera un reporte detallado de la comparativa."""
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            ruta_reporte = os.path.join("resultados_deteccion", "comparativas",
+                                       f"reporte_comparativa_{timestamp}.txt")
+            os.makedirs(os.path.dirname(ruta_reporte), exist_ok=True)
+            
+            with open(ruta_reporte, 'w', encoding='utf-8') as f:
+                f.write("=" * 80 + "\n")
+                f.write("REPORTE DE COMPARATIVA DE MODELOS CNN\n")
+                f.write("=" * 80 + "\n\n")
+                
+                f.write(f"Fecha y hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Imagen analizada: {os.path.basename(ruta_imagen)}\n")
+                f.write(f"Ruta completa: {ruta_imagen}\n\n")
+                
+                if tecnicas:
+                    f.write("PREPROCESAMIENTO APLICADO:\n")
+                    f.write("-" * 40 + "\n")
+                    for i, tecnica in enumerate(tecnicas, 1):
+                        nombre_tecnica = self.preprocesador.tecnicas_disponibles.get(tecnica, tecnica)
+                        f.write(f"  {i}. {nombre_tecnica}\n")
+                    f.write("\n")
+                else:
+                    f.write("PREPROCESAMIENTO: Ninguno\n\n")
+                
+                f.write("=" * 80 + "\n")
+                f.write("RESULTADOS POR MODELO\n")
+                f.write("=" * 80 + "\n\n")
+                
+                for modelo_nombre, resultado in resultados.items():
+                    f.write(f"{'─' * 80}\n")
+                    f.write(f"MODELO: {modelo_nombre.upper()}\n")
+                    f.write(f"{'─' * 80}\n\n")
+                    
+                    top_5 = resultado.get('top_5_clases', [])
+                    
+                    f.write(f"Clase principal: {top_5[0]['clase']}\n")
+                    f.write(f"Confianza: {top_5[0]['confianza']:.4f} ({top_5[0]['confianza']*100:.2f}%)\n\n")
+                    
+                    f.write("Top 5 Predicciones:\n")
+                    for i, pred in enumerate(top_5, 1):
+                        f.write(f"  {i}. {pred['clase']:<40} {pred['confianza']:.4f} ({pred['confianza']*100:.2f}%)\n")
+                    
+                    # Análisis de sombrero
+                    if resultado.get('deteccion_sombrero') == 'con_sombrero':
+                        f.write(f"\n👒 Detección de sombrero: SÍ\n")
+                        if resultado.get('mejor_sombrero'):
+                            mejor = resultado['mejor_sombrero']
+                            f.write(f"   Mejor detección: {mejor['clase']} ({mejor['confianza']:.4f})\n")
+                    else:
+                        f.write(f"\n👒 Detección de sombrero: NO\n")
+                    
+                    f.write("\n")
+                
+                f.write("=" * 80 + "\n")
+                f.write("ANÁLISIS COMPARATIVO\n")
+                f.write("=" * 80 + "\n\n")
+                
+                # Comparar predicciones principales
+                clases_principales = {}
+                for modelo, resultado in resultados.items():
+                    clase = resultado.get('top_5_clases', [{}])[0].get('clase', 'N/A')
+                    conf = resultado.get('top_5_clases', [{}])[0].get('confianza', 0)
+                    clases_principales[modelo] = (clase, conf)
+                
+                f.write("Predicciones principales por modelo:\n")
+                for modelo, (clase, conf) in sorted(clases_principales.items(), 
+                                                    key=lambda x: x[1][1], reverse=True):
+                    f.write(f"  • {modelo.upper():<15} → {clase:<40} ({conf*100:.2f}%)\n")
+                
+                # Consenso
+                clases_unicas = set(c for c, _ in clases_principales.values())
+                f.write(f"\nClases únicas predichas: {len(clases_unicas)}\n")
+                
+                if len(clases_unicas) == 1:
+                    f.write("✅ CONSENSO TOTAL: Todos los modelos predicen la misma clase\n")
+                elif len(clases_unicas) == len(clases_principales):
+                    f.write("⚠️  SIN CONSENSO: Cada modelo predice una clase diferente\n")
+                else:
+                    f.write("🔶 CONSENSO PARCIAL: Algunos modelos coinciden\n")
+                
+                f.write(f"\n{'=' * 80}\n")
+                f.write("Reporte generado por Sistema de Detección Mejorado v2.0\n")
+                f.write("Universidad del Quindío - Visión Artificial\n")
+                f.write("=" * 80 + "\n")
+            
+            print(f"📄 Reporte guardado: {ruta_reporte}")
+            
+        except Exception as e:
+            print(f"❌ Error generando reporte: {e}")
+
+    def mostrar_ayuda(self):
+        """Muestra información de ayuda del sistema."""
+        print("\nAYUDA - SISTEMA DE DETECCIÓN DE SOMBREROS")
+        print("=" * 50)
+        print("\nFuncionalidades principales:")
+        print("1. DETECCIÓN EN IMAGEN:")
+        print("   - Seleccione un modelo (opción 3)")
+        print("   - Vaya a detección en imagen (opción 1)")
+        print("   - Opción de aplicar preprocesamiento interactivo")
+        print("   - Proporcione la ruta de la imagen")
+        
+        print("\n2. DETECCIÓN EN VIDEO:")
+        print("   - Seleccione un modelo (opción 3)")
+        print("   - Vaya a detección en video (opción 2)")
+        print("   - Elija entre cámara web o archivo de video")
+        print("   - Use 'q' para salir durante la detección")
+        
+        print("\n3. MODELOS DISPONIBLES:")
+        print("   Clasificación: LeNet, AlexNet, VGG16, ResNet50, ResNet101")
+        print("   Detección: YOLO, SSD, R-CNN")
+        print("   Segmentación: U-Net, Mask R-CNN")
+        
+        print("\n4. COMPARATIVA DE MODELOS (NUEVO):")
+        print("   - Analiza una imagen con todos los modelos de ImageNet")
+        print("   - Genera gráficos comparativos estilo notebook")
+        print("   - Muestra Top 5 clases para cada modelo")
+        print("   - Opción de preprocesamiento antes del análisis")
+        print("   - Reporte detallado con análisis de consenso")
+        
+        print("\n5. PREPROCESAMIENTO:")
+        print("   - Ecualización de histograma (mejorar iluminación)")
+        print("   - CLAHE (mejorar contraste local)")
+        print("   - Mejora de saturación de colores")
+        print("   - Filtro bilateral (reducir ruido)")
+        print("   - Ajustes de brillo y contraste")
+        print("   - Corrección gamma")
+        
+        print("\n6. CONTROLES DE VIDEO:")
+        print("   - 'q': Salir")
+        print("   - 'c': Cambiar configuración en tiempo real")
+        
+        print("\n7. CONFIGURACIÓN:")
+        print("   - Umbral de confianza: Ajusta sensibilidad")
+        print("   - FPS objetivo: Controla velocidad de procesamiento")
+        
+        print("\nNOTA: Los modelos se cargan automáticamente cuando se seleccionan")
+        print("      Algunos modelos requieren PyTorch instalado")
+        print("      La comparativa usa modelos VGG16, ResNet50 y ResNet101")
+        
+        input("\nPresione Enter para continuar...")
 
 def main():
     """Función principal."""

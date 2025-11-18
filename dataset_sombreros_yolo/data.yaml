@@ -1,0 +1,7 @@
+path: G:\Mi unidad\Universidad_del_Quindio\8vo_Semestre\Vision_Artificial\proyecto-vision_artificial\dataset_sombreros_yolo
+train: images/train
+val: images/val
+test: images/test
+nc: 1
+names:
+  0: cowboy hat
